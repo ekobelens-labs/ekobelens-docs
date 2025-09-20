@@ -1,0 +1,57 @@
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+
+autolabeler:
+  - label: "📚 Documentation"
+    title:
+      - "/^docs/"
+      - "/^doc/"
+      - "/documentation/"
+    branch:
+      - "/^docs\/.+/"
+      - "/^doc\/.+/"
+
+  - label: "🐛 Fix"
+    title:
+      - "/^fix/"
+      - "/^bug/"
+    branch:
+      - "/^fix\/.+/"
+      - "/^hotfix\/.+/"
+
+  - label: "✨ Enhancement"
+    title:
+      - "/^enhance/"
+      - "/^improve/"
+      - "/^update/"
+    branch:
+      - "/^enhance\/.+/"
+      - "/^improve\/.+/"
+
+categories:
+  - title: "📚 Documentation Updates"
+    labels:
+      - "📚 Documentation"
+  - title: "🐛 Bug Fixes"
+    labels:
+      - "🐛 Fix"
+  - title: "✨ Enhancements"
+    labels:
+      - "✨ Enhancement"
+
+version-resolver:
+  minor:
+    labels:
+      - "✨ Enhancement"
+  patch:
+    labels:
+      - "📚 Documentation"
+      - "🐛 Fix"
+
+template: |
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+
+  Engineers that in charge on this release:
+  $CONTRIBUTORS
