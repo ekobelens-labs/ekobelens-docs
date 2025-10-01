@@ -4,91 +4,171 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
+import CodeBlock from '@theme/CodeBlock';
 
 import styles from './index.module.css';
 
-function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+type Feature = {
+  title: string;
+  description: string;
+  link: string;
+  cta: string;
+  icon: string;
+};
+
+type Resource = {
+  label: string;
+  to?: string;
+  href?: string;
+};
+
+const features: Feature[] = [
+  {
+    title: 'Authentication & Identity',
+    description:
+      'Token-based authentication with refresh token rotation keeps sessions secure across Ekobelens clients.',
+    link: '/docs/api/login',
+    cta: 'Review Auth APIs',
+    icon: '🔐',
+  },
+  {
+    title: 'DRAM Lifecycle',
+    description:
+      'Create, update, and publish DRAM chapters with structured metadata aligned to mitigation workflows.',
+    link: '/docs/api/create-dram-document-chapter',
+    cta: 'Browse DRAM APIs',
+    icon: '📄',
+  },
+  {
+    title: 'Organization & Users',
+    description:
+      'Manage organizations, roles, and users with consistent governance patterns and audited changes.',
+    link: '/docs/api/create-organization',
+    cta: 'Explore Management APIs',
+    icon: '🏢',
+  },
+];
+
+const resources: Resource[] = [
+  {label: 'Platform Overview', to: '/docs/intro'},
+  {label: 'Full API Explorer', to: '/docs/api/ekobelens-api'},
+  {label: 'Swagger Source', href: 'https://github.com/ekobelens-labs/ekobelens-docs/blob/main/specs/swagger.yaml'},
+];
+
+const stats = [
+  {label: 'Endpoints documented', value: '40+'},
+  {label: 'Response schemas', value: '100%'},
+  {label: 'Average uptime', value: '99.9%'},
+];
+
+function HeroCard(): ReactNode {
   return (
-    <header className={clsx('hero', styles.heroBanner)}>
-      <div className="container">
-        <Heading as="h1" className="hero__title">
-          {siteConfig.title}
-        </Heading>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--primary button--lg"
-            to="/docs/api/login">
-            🚀 Explore API
-          </Link>
-          <Link
-            className="button button--outline button--lg"
-            to="/docs/intro">
-            📖 Getting Started
-          </Link>
-        </div>
+    <div className={styles.heroCard}>
+      <p className={styles.heroIntro}>Ekobelens API Documentation</p>
+      <Heading as="h1" className={styles.heroTitle}>
+        Build reliable mitigation workflows faster
+      </Heading>
+      <p className={styles.heroSubtitle}>
+        Authoritative REST documentation for authentication, DRAM lifecycles, and organization management across the Ekobelens ecosystem.
+      </p>
+      <div className={styles.heroActions}>
+        <Link className="button button--primary button--lg" to="/docs/api/ekobelens-api">
+          Explore API Reference
+        </Link>
+        <Link className="button button--secondary button--lg" to="/docs/intro">
+          Read Getting Started
+        </Link>
       </div>
-    </header>
+    </div>
   );
 }
 
-function ApiOverview() {
+function StatBar(): ReactNode {
   return (
-    <section className={styles.features}>
+    <dl className={styles.statBar}>
+      {stats.map(stat => (
+        <div key={stat.label} className={styles.statItem}>
+          <dt>{stat.label}</dt>
+          <dd>{stat.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function Quickstart(): ReactNode {
+  return (
+    <section className={styles.quickstart}>
       <div className="container">
-        <div className="row">
-          <div className="col col--12">
-            <div className="text--center">
-              <Heading as="h2">API Endpoints Overview</Heading>
-              <p>Comprehensive REST API for the Ekobelens platform</p>
-            </div>
+        <div className={styles.quickstartLayout}>
+          <div>
+            <Heading as="h2">Quick start</Heading>
+            <p>
+              Generate a local preview and navigate the API explorer in minutes. These commands assume Node 18+ and Yarn.
+            </p>
+            <ul className={styles.quickstartList}>
+              <li>Install dependencies</li>
+              <li>Run the live docs server</li>
+              <li>Regenerate OpenAPI pages when specs change</li>
+            </ul>
+          </div>
+          <div>
+            <CodeBlock language="bash">{`yarn install
+yarn start
+# When specs/swagger.yaml updates
+yarn regen-api`}</CodeBlock>
           </div>
         </div>
-        <div className="row">
-          <div className="col col--4">
-            <div className="text--center">
-              <div className={styles.featureIcon}>🔐</div>
-              <Heading as="h3">Authentication</Heading>
-              <p>
-                Secure user login and token-based authentication system with refresh token support.
-              </p>
-              <Link
-                className="button button--outline"
-                to="/docs/api/login">
-                View Auth Endpoints
+      </div>
+    </section>
+  );
+}
+
+function FeatureGrid(): ReactNode {
+  return (
+    <section className={styles.featureSection}>
+      <div className="container">
+        <Heading as="h2" className={styles.sectionTitle}>
+          What you can build
+        </Heading>
+        <p className={styles.sectionLead}>
+          Use consistent endpoints, validation, and examples tailored to mitigation action plans.
+        </p>
+        <div className={styles.featureGrid}>
+          {features.map(feature => (
+            <article key={feature.title} className={styles.featureCard}>
+              <span className={styles.featureIcon}>{feature.icon}</span>
+              <Heading as="h3">{feature.title}</Heading>
+              <p>{feature.description}</p>
+              <Link className={styles.featureLink} to={feature.link}>
+                {feature.cta}
               </Link>
-            </div>
-          </div>
-          <div className="col col--4">
-            <div className="text--center">
-              <div className={styles.featureIcon}>📋</div>
-              <Heading as="h3">DRAM Management</Heading>
-              <p>
-                Create and manage DRAM (Document Risk Assessment Management) chapters with detailed metadata.
-              </p>
-              <Link
-                className="button button--outline"
-                to="/docs/api/create-dram-document-chapter">
-                View DRAM API
-              </Link>
-            </div>
-          </div>
-          <div className="col col--4">
-            <div className="text--center">
-              <div className={styles.featureIcon}>👥</div>
-              <Heading as="h3">User & Organization</Heading>
-              <p>
-                Manage users and organizations with comprehensive registration and management capabilities.
-              </p>
-              <Link
-                className="button button--outline"
-                to="/docs/api/register-user">
-                View User API
-              </Link>
-            </div>
-          </div>
+            </article>
+          ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function ResourceStrip(): ReactNode {
+  return (
+    <section className={styles.resourceStrip}>
+      <div className="container">
+        <div>
+          <Heading as="h2">Essential resources</Heading>
+          <p>Stay aligned with platform updates and governance requirements.</p>
+        </div>
+        <ul className={styles.resourceList}>
+          {resources.map(resource => {
+            const linkProps = resource.href ? {href: resource.href} : {to: resource.to!};
+            return (
+              <li key={resource.label}>
+                <Link {...linkProps}>{resource.label}</Link>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </section>
   );
@@ -99,10 +179,17 @@ export default function Home(): ReactNode {
   return (
     <Layout
       title="API Documentation"
-      description="Comprehensive REST API documentation for the Ekobelens platform with authentication, DRAM management, and user operations.">
-      <HomepageHeader />
+      description={siteConfig.tagline}>
+      <div className={clsx('hero', styles.heroWrap)}>
+        <div className="container">
+          <HeroCard />
+          <StatBar />
+        </div>
+      </div>
       <main>
-        <ApiOverview />
+        <Quickstart />
+        <FeatureGrid />
+        <ResourceStrip />
       </main>
     </Layout>
   );

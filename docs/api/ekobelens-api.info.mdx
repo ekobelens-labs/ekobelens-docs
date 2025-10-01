@@ -1,47 +1,102 @@
 ---
 id: ekobelens-api
-title: "Ekobelens API"
-description: "Ekobelens Service API Docs."
+title: Ekobelens API
+description: Authoritative Ekobelens Service API overview with authentication, DRAM, organization, and user modules.
 sidebar_label: Introduction
 sidebar_position: 0
 hide_title: true
 custom_edit_url: null
 ---
 
-import ApiLogo from "@theme/ApiLogo";
-import Heading from "@theme/Heading";
-import SchemaTabs from "@theme/SchemaTabs";
-import TabItem from "@theme/TabItem";
-import Export from "@theme/ApiExplorer/Export";
+import Link from '@docusaurus/Link';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import GeneratedChangelog from './_generated-changelog.mdx';
 
-<span
-  className={"theme-doc-version-badge badge badge--secondary"}
-  children={"Version: 1.0"}
->
-</span>
-
-<Heading
-  as={"h1"}
-  className={"openapi__heading"}
-  children={"Ekobelens API"}
->
-</Heading>
-
-
-
-Ekobelens Service API Docs.
-
-<div
-  style={{"display":"flex","flexDirection":"column","marginBottom":"var(--ifm-paragraph-margin-bottom)"}}
->
-  <h3
-    style={{"marginBottom":"0.25rem"}}
-  >
-    Contact
-  </h3><span>
-    Ekobelens-Labs: 
-  </span><span>
-    URL: [https://github.com/ekobelens-labs](https://github.com/ekobelens-labs)
-  </span>
+<div className="doc-hero doc-hero--api">
+  <p className="doc-hero-kicker">API Reference</p>
+  <h1>Ekobelens REST API Overview</h1>
+  <p className="doc-hero-lead">
+    Centralized endpoints for authentication, DRAM lifecycle management, organizational hierarchy, and user governance.
+    Use this hub to navigate generated endpoint docs, schema exports, and operational guardrails.
+  </p>
+  <div className="doc-hero-meta">
+    <span className="badge badge--primary">Version 1.0</span>
+    <a className="doc-hero-link" href="https://github.com/ekobelens-labs/ekobelens-docs/blob/main/specs/swagger.yaml" target="_blank" rel="noopener noreferrer">
+      Download OpenAPI Spec
+    </a>
+  </div>
 </div>
-      
+
+## Base URLs & Service health
+
+| Environment | REST Base URL | Notes |
+| --- | --- | --- |
+| Production | `https://api.ekobelens.com/api/v1` | Primary cluster with 99.9% uptime SLA |
+| Staging | `https://api-staging.ekobelens.com/api/v1` | Mirrors prod schemas for pre-release testing |
+
+- All responses include `request_id` headers for tracing across services.
+- Rate limiting is applied per workspace; throttled requests return `429` with a `Retry-After` header.
+- API deployments are announced in `#release-ops` and reflected in the changelog below.
+
+## Modules at a glance
+
+<div className="doc-grid">
+  <article className="doc-card">
+    <h3>Authentication</h3>
+    <p>Issue, refresh, and revoke JWT tokens with rotation controls for long-lived integrations.</p>
+    <Link to="/docs/api/login">Explore Auth endpoints →</Link>
+  </article>
+  <article className="doc-card">
+    <h3>DRAM Lifecycle</h3>
+    <p>Model mitigation chapters, upload supporting data, and publish DRAM updates with audit trails.</p>
+    <Link to="/docs/api/create-dram-document-chapter">View DRAM actions →</Link>
+  </article>
+  <article className="doc-card">
+    <h3>Organization & Users</h3>
+    <p>Maintain organizations, roles, and user permissions while preserving hierarchical consistency.</p>
+    <Link to="/docs/api/create-organization">Manage governance APIs →</Link>
+  </article>
+</div>
+
+## Request & response pattern
+
+<Tabs>
+  <TabItem value="curl" label="Sample request" default>
+
+  ```bash
+  curl -X POST "$BASE_URL/auth/login" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "email": "user@example.com",
+      "password": "your-strong-password"
+    }'
+  ```
+
+  </TabItem>
+  <TabItem value="response" label="Unified response">
+
+  ```json
+  {
+    "data": {
+      "access_token": "<ACCESS_TOKEN>",
+      "refresh_token": "<REFRESH_TOKEN>",
+      "expires_in": 900
+    },
+    "request_id": "01J...",
+    "meta": {
+      "issued_at": "2024-03-08T06:12:34Z"
+    }
+  }
+  ```
+
+  </TabItem>
+</Tabs>
+
+All endpoints share the same error envelope, returning `success: false`, a human-readable `message`, and a collection of `issues` describing invalid fields.
+
+## Change log & support
+
+<GeneratedChangelog />
+
+Need help? Reach us at [support@ekobelens.com](mailto:support@ekobelens.com) or open an issue in [ekobelens-docs](https://github.com/ekobelens-labs/ekobelens-docs/issues).

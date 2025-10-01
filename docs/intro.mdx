@@ -1,0 +1,108 @@
+---
+sidebar_label: Getting Started
+title: Getting Started
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<div className="doc-hero">
+  <p className="doc-hero-kicker">Ekobelens API Platform</p>
+  <h1>Kickstart your integration in minutes</h1>
+  <p className="doc-hero-lead">
+    Securely authenticate, explore DRAM operations, and manage organizations with a consistent
+    set of REST endpoints. This guide highlights the essentials so you can move from setup to
+    production quickly.
+  </p>
+</div>
+
+## Prerequisites
+
+- Node.js 18+ and Yarn for previewing documentation locally (`yarn install && yarn start`).
+- An Ekobelens workspace with an administrator or integration user.
+- HTTPS enabled in your environment to keep token exchanges secure.
+
+:::tip Credential hygiene
+Create a dedicated service account for automation and restrict its permissions to the APIs it needs.
+:::
+
+## Environment URLs
+
+| Environment | Base URL |
+| --- | --- |
+| Production | `https://api.ekobelens.com/api/v1` |
+| Staging | `https://api-staging.ekobelens.com/api/v1` |
+
+All endpoints listed in the reference are relative to the base URL you target.
+
+## Authenticate in three steps
+
+<Tabs>
+  <TabItem value="curl" label="cURL" default>
+
+  ```bash
+  # 1. Exchange credentials for an access/refresh token pair
+  curl -X POST \
+    "$BASE_URL/auth/login" \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "email": "user@example.com",
+      "password": "your-strong-password"
+    }'
+
+  # 2. Call a protected resource with the bearer token
+  curl \
+    -H "Authorization: Bearer $ACCESS_TOKEN" \
+    "$BASE_URL/organization"
+
+  # 3. Refresh tokens before the access token expires
+  curl -X POST \
+    "$BASE_URL/auth/refresh" \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "refresh_token": "<REFRESH_TOKEN>"
+    }'
+  ```
+
+  </TabItem>
+  <TabItem value="httpie" label="HTTPie">
+
+  ```bash
+  http POST "$BASE_URL/auth/login" email=user@example.com password=your-strong-password
+  http GET "$BASE_URL/organization" "Authorization:Bearer $ACCESS_TOKEN"
+  http POST "$BASE_URL/auth/refresh" refresh_token=<REFRESH_TOKEN>
+  ```
+
+  </TabItem>
+</Tabs>
+
+Successful responses wrap data in an envelope:
+
+```json
+{
+  "data": {
+    "access_token": "<ACCESS_TOKEN>",
+    "refresh_token": "<REFRESH_TOKEN>"
+  },
+  "request_id": "01J..."
+}
+```
+
+Errors follow a consistent `apperror.Error` shape with `issues` describing validation failures.
+
+## Platform conventions
+
+- All payloads use `application/json` with snake_case fields.
+- Idempotent operations return the same `request_id` header you can log for traceability.
+- Rate limiting is enforced per workspace; retry after the window resets when you receive HTTP 429.
+- Official SDKs stream soon—meanwhile, rely on the OpenAPI definition (`yarn regen-api`) to scaffold clients.
+
+:::note Testing checklist
+Before opening a pull request, run `yarn typecheck`, `yarn regen-api`, and `yarn build` to catch MDX or schema issues early.
+:::
+
+## Where to next
+
+- Dive into the **API Reference** overview for endpoint groups and schema exports.
+- Review **Authentication** endpoints to explore login, token refresh, and session lifetimes.
+- Visit **DRAM Lifecycle** docs to learn how chapters map to Mitigation Action Plan workflows.
