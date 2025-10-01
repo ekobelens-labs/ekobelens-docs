@@ -7,6 +7,7 @@ import Heading from '@theme/Heading';
 import CodeBlock from '@theme/CodeBlock';
 
 import styles from './index.module.css';
+import apiSidebar from '@site/docs/api/sidebar';
 
 type Feature = {
   title: string;
@@ -55,8 +56,43 @@ const resources: Resource[] = [
   {label: 'Swagger Source', href: 'https://github.com/ekobelens-labs/ekobelens-docs/blob/main/specs/swagger.yaml'},
 ];
 
+
+type SidebarDocItem = {
+  type: 'doc';
+  id: string;
+  label?: string;
+};
+
+type SidebarCategoryItem = {
+  type: 'category';
+  label: string;
+  items: SidebarItem[];
+};
+
+type SidebarItem = SidebarDocItem | SidebarCategoryItem | {type: string; items?: SidebarItem[]};
+
+const endpointCount = countDocs(apiSidebar as SidebarItem[]);
+
+function countDocs(items: SidebarItem[]): number {
+  return items.reduce((total, item) => {
+    if (item.type === 'doc') {
+      const doc = item as SidebarDocItem;
+      if (doc.id === 'api/ekobelens-api') {
+        return total;
+      }
+      return total + 1;
+    }
+
+    if (item.type === 'category' && Array.isArray(item.items)) {
+      return total + countDocs(item.items as SidebarItem[]);
+    }
+
+    return total;
+  }, 0);
+}
+
 const stats = [
-  {label: 'Endpoints documented', value: '40+'},
+  {label: 'Endpoints documented', value: endpointCount.toString()},
   {label: 'Response schemas', value: '100%'},
   {label: 'Average uptime', value: '99.9%'},
 ];
