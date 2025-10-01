@@ -1,5 +1,33 @@
 basePath: /api/external/v1
 definitions:
+  address.District:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+    type: object
+  address.Province:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+    type: object
+  address.SubDistrict:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+    type: object
+  address.Village:
+    properties:
+      code:
+        type: string
+      name:
+        type: string
+    type: object
   apperror.Error:
     properties:
       formatted:
@@ -267,6 +295,191 @@ info:
   title: Ekobelens API
   version: "1.0"
 paths:
+  /address/districts/{district_code}/sub-districts:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of sub-districts within a specific district using
+        the district code
+      parameters:
+      - description: District Code
+        in: path
+        name: district_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/address.SubDistrict'
+                  type: array
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get List of Sub-Districts by District Code
+      tags:
+      - Address
+  /address/provinces:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all provinces
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/address.Province'
+                  type: array
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get List of Provinces
+      tags:
+      - Address
+  /address/provinces/{province_code}/districts:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of districts within a specific province using the
+        province code
+      parameters:
+      - description: Province Code
+        in: path
+        name: province_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/address.District'
+                  type: array
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get List of Districts by Province Code
+      tags:
+      - Address
+  /address/sub-districts/{sub_district_code}/villages:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of villages within a specific sub-district using
+        the sub-district code
+      parameters:
+      - description: Sub-District Code
+        in: path
+        name: sub_district_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/address.Village'
+                  type: array
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get List of Villages by Sub-District Code
+      tags:
+      - Address
   /auth/login:
     post:
       consumes:

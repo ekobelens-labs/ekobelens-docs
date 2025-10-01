@@ -8,6 +8,36 @@ const sidebar: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Address",
+      items: [
+        {
+          type: "doc",
+          id: "api/get-list-of-sub-districts-by-district-code",
+          label: "Get List of Sub-Districts by District Code",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/get-list-of-provinces",
+          label: "Get List of Provinces",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/get-list-of-districts-by-province-code",
+          label: "Get List of Districts by Province Code",
+          className: "api-method get",
+        },
+        {
+          type: "doc",
+          id: "api/get-list-of-villages-by-sub-district-code",
+          label: "Get List of Villages by Sub-District Code",
+          className: "api-method get",
+        },
+      ],
+    },
+    {
+      type: "category",
       label: "Auth",
       items: [
         {
