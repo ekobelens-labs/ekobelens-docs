@@ -3,7 +3,7 @@ import {execSync} from 'node:child_process';
 import {writeFileSync, mkdirSync} from 'node:fs';
 import {dirname, resolve} from 'node:path';
 
-const OUTPUT_PATH = resolve('docs/api/_generated-changelog.mdx');
+const OUTPUT_PATH = resolve('docs/api/generated/_generated-changelog.mdx');
 const MAX_COMMITS = 8;
 const REPO_URL = 'https://github.com/ekobelens-labs/ekobelens-docs';
 

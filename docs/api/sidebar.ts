@@ -12,25 +12,25 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "api/get-list-of-sub-districts-by-district-code",
+          id: "api/generated/get-list-of-sub-districts-by-district-code",
           label: "Get List of Sub-Districts by District Code",
           className: "api-method get",
         },
         {
           type: "doc",
-          id: "api/get-list-of-provinces",
+          id: "api/generated/get-list-of-provinces",
           label: "Get List of Provinces",
           className: "api-method get",
         },
         {
           type: "doc",
-          id: "api/get-list-of-districts-by-province-code",
+          id: "api/generated/get-list-of-districts-by-province-code",
           label: "Get List of Districts by Province Code",
           className: "api-method get",
         },
         {
           type: "doc",
-          id: "api/get-list-of-villages-by-sub-district-code",
+          id: "api/generated/get-list-of-villages-by-sub-district-code",
           label: "Get List of Villages by Sub-District Code",
           className: "api-method get",
         },
@@ -42,13 +42,13 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "api/login",
+          id: "api/generated/login",
           label: "Login",
           className: "api-method post",
         },
         {
           type: "doc",
-          id: "api/refresh-token",
+          id: "api/generated/refresh-token",
           label: "Refresh Token",
           className: "api-method post",
         },
@@ -60,7 +60,7 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "api/create-dram-document-chapter",
+          id: "api/generated/create-dram-document-chapter",
           label: "Create DRAM Document Chapter",
           className: "api-method post",
         },
@@ -72,7 +72,7 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "api/create-organization",
+          id: "api/generated/create-organization",
           label: "Create Organization",
           className: "api-method post",
         },
@@ -84,7 +84,7 @@ const sidebar: SidebarsConfig = {
       items: [
         {
           type: "doc",
-          id: "api/register-user",
+          id: "api/generated/register-user",
           label: "Register User",
           className: "api-method post",
         },

@@ -11,7 +11,7 @@ custom_edit_url: null
 import Link from '@docusaurus/Link';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import GeneratedChangelog from './_generated-changelog.mdx';
+import GeneratedChangelog from './generated/_generated-changelog.mdx';
 
 <div className="doc-hero doc-hero--api">
   <p className="doc-hero-kicker">API Reference</p>
@@ -45,17 +45,17 @@ import GeneratedChangelog from './_generated-changelog.mdx';
   <article className="doc-card">
     <h3>Authentication</h3>
     <p>Issue, refresh, and revoke JWT tokens with rotation controls for long-lived integrations.</p>
-    <Link to="/docs/api/login">Explore Auth endpoints →</Link>
+    <Link to="/docs/api/generated/login">Explore Auth endpoints →</Link>
   </article>
   <article className="doc-card">
     <h3>DRAM Lifecycle</h3>
     <p>Model mitigation chapters, upload supporting data, and publish DRAM updates with audit trails.</p>
-    <Link to="/docs/api/create-dram-document-chapter">View DRAM actions →</Link>
+    <Link to="/docs/api/generated/create-dram-document-chapter">View DRAM actions →</Link>
   </article>
   <article className="doc-card">
     <h3>Organization & Users</h3>
     <p>Maintain organizations, roles, and user permissions while preserving hierarchical consistency.</p>
-    <Link to="/docs/api/create-organization">Manage governance APIs →</Link>
+    <Link to="/docs/api/generated/create-organization">Manage governance APIs →</Link>
   </article>
 </div>
 

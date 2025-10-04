@@ -28,7 +28,7 @@ const features: Feature[] = [
     title: 'Authentication & Identity',
     description:
       'Token-based authentication with refresh token rotation keeps sessions secure across Ekobelens clients.',
-    link: '/docs/api/login',
+    link: '/docs/api/generated/login',
     cta: 'Review Auth APIs',
     icon: '🔐',
   },
@@ -36,7 +36,7 @@ const features: Feature[] = [
     title: 'DRAM Lifecycle',
     description:
       'Create, update, and publish DRAM chapters with structured metadata aligned to mitigation workflows.',
-    link: '/docs/api/create-dram-document-chapter',
+    link: '/docs/api/generated/create-dram-document-chapter',
     cta: 'Browse DRAM APIs',
     icon: '📄',
   },
@@ -44,7 +44,7 @@ const features: Feature[] = [
     title: 'Organization & Users',
     description:
       'Manage organizations, roles, and users with consistent governance patterns and audited changes.',
-    link: '/docs/api/create-organization',
+    link: '/docs/api/generated/create-organization',
     cta: 'Explore Management APIs',
     icon: '🏢',
   },

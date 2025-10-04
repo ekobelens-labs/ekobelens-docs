@@ -64,7 +64,7 @@ const config: Config = {
         config: {
           ekobelens: {
             specPath: "specs/swagger.yaml",
-            outputDir: "docs/api",
+            outputDir: "docs/api/generated",
             sidebarOptions: {
               groupPathsBy: "tag",
             },
@@ -117,7 +117,7 @@ const config: Config = {
           items: [
             {
               label: 'API Reference',
-              to: '/docs/api/login',
+              to: '/docs/api/generated/login',
             },
             {
               label: 'Getting Started',
@@ -130,15 +130,15 @@ const config: Config = {
           items: [
             {
               label: 'Authentication',
-              to: '/docs/api/login',
+              to: '/docs/api/generated/login',
             },
             {
               label: 'DRAM Management',
-              to: '/docs/api/create-dram-document-chapter',
+              to: '/docs/api/generated/create-dram-document-chapter',
             },
             {
               label: 'User Management',
-              to: '/docs/api/register-user',
+              to: '/docs/api/generated/register-user',
             },
           ],
         },
