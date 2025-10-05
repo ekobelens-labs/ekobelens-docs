@@ -77,7 +77,7 @@ function countDocs(items: SidebarItem[]): number {
   return items.reduce((total, item) => {
     if (item.type === 'doc') {
       const doc = item as SidebarDocItem;
-      if (doc.id === 'api/ekobelens-api') {
+      if (doc.id.endsWith('ekobelens-api')) {
         return total;
       }
       return total + 1;
