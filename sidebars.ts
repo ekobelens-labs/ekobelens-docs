@@ -1,5 +1,5 @@
 import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
-import generatedApiSidebar from './docs/api/sidebar';
+import generatedApiSidebar from './docs/api/generated/sidebar';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 

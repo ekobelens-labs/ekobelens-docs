@@ -7,7 +7,7 @@ import Heading from '@theme/Heading';
 import CodeBlock from '@theme/CodeBlock';
 
 import styles from './index.module.css';
-import apiSidebar from '@site/docs/api/sidebar';
+import apiSidebar from '@site/docs/api/generated/sidebar';
 
 type Feature = {
   title: string;
