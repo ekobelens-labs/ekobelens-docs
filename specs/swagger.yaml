@@ -118,6 +118,25 @@ definitions:
     - email
     - password
     type: object
+  v1.mitigationActionOnChangeRequest:
+    properties:
+      activity_title:
+        $ref: '#/definitions/v1.updateActivityTitleRequest'
+      analyst:
+        $ref: '#/definitions/v1.updateProjectAnalystRequest'
+      general_description:
+        $ref: '#/definitions/v1.updateGeneralDescriptionRequest'
+      grk_contribution:
+        $ref: '#/definitions/v1.updateGRKCreditContributionRequest'
+      location:
+        $ref: '#/definitions/v1.updateMitigationLocationRequest'
+      project_duration:
+        $ref: '#/definitions/v1.updateProjectDurationRequest'
+      representative:
+        $ref: '#/definitions/v1.updateRepresentativeContactRequest'
+      spei_participant:
+        $ref: '#/definitions/v1.updateSPEIParticipantIdentityRequest'
+    type: object
   v1.mitigationActionRequest:
     properties:
       activity_title:
@@ -284,6 +303,103 @@ definitions:
       access_token:
         type: string
       refresh_token:
+        type: string
+    type: object
+  v1.updateActivityTitleRequest:
+    properties:
+      activity_title:
+        type: string
+    type: object
+  v1.updateGRKCreditContributionRequest:
+    properties:
+      contribution_explanation:
+        type: string
+    type: object
+  v1.updateGeneralDescriptionRequest:
+    properties:
+      activity_status:
+        enum:
+        - PLANNING
+        - ONGOING
+        type: string
+      general_purpose:
+        type: string
+      organization:
+        type: string
+    type: object
+  v1.updateMitigationLocationRequest:
+    properties:
+      district:
+        type: string
+      province:
+        type: string
+      sub_district:
+        type: string
+      village:
+        type: string
+    type: object
+  v1.updateProjectAnalystRequest:
+    properties:
+      implementation_barriers:
+        type: string
+      required_by_government_policy:
+        type: string
+    type: object
+  v1.updateProjectDurationRequest:
+    properties:
+      end_date:
+        type: string
+      project_category:
+        type: string
+      start_date:
+        type: string
+    type: object
+  v1.updateRepresentativeContactRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      organization:
+        type: string
+      phone_number:
+        type: string
+      position:
+        type: string
+    type: object
+  v1.updateSPEIParticipantIdentityRequest:
+    properties:
+      address:
+        type: string
+      district:
+        type: string
+      email:
+        type: string
+      organization:
+        type: string
+      organization_type:
+        type: string
+      phone_number:
+        type: string
+      province:
+        description: Location Detail
+        type: string
+      representative_name:
+        description: Organization Representative Profile
+        type: string
+      representative_title:
+        type: string
+      role_in_mitigation:
+        type: string
+      spe_grk_ownership_ratio:
+        maximum: 100
+        minimum: 0
+        type: integer
+      sub_district:
+        type: string
+      village:
+        type: string
+      website:
         type: string
     type: object
 host: api.ekobelens.com
@@ -692,6 +808,141 @@ paths:
       security:
       - BearerAuth: []
       summary: Create DRAM Document Chapter
+      tags:
+      - DRAM
+  /dram/chapter/{chapter}/document/{document_id}:
+    patch:
+      consumes:
+      - application/json
+      description: |
+        Update an existing DRAM document chapter
+        ## Chapter 1 JSON Payload to UI Form Field Mapping
+
+        ### Activity Title Section (Step 1/8)
+
+        | JSON Payload Field              | UI Form Field                  |
+        | ------------------------------- | ------------------------------ |
+        | `activity_title.activity_title` | Judul Kegiatan / Aksi Mitigasi |
+
+        ### General Description Section (Step 2/8)
+
+        | JSON Payload Field                    | UI Form Field                             |
+        | ------------------------------------- | ----------------------------------------- |
+        | `general_description.organization`    | Organisasi/Entitas                        |
+        | `general_description.activity_status` | Status Kegiatan (Rencana/Sedang Berjalan) |
+        | `general_description.general_purpose` | Tujuan Umum                               |
+
+        ### SPEI Participant Identity Section (Step 3/8)
+
+        | JSON Payload Field                         | UI Form Field                  |
+        | ------------------------------------------ | ------------------------------ |
+        | `spei_participant.organization`            | Organisasi/Entitas             |
+        | `spei_participant.organization_type`       | Jenis Organisasi/Entitas       |
+        | `spei_participant.role_in_mitigation`      | Peran dalam Aksi Mitigasi      |
+        | `spei_participant.spe_grk_ownership_ratio` | Bagian Kepemilikan SPE-GRK (%) |
+        | `spei_participant.representative_name`     | Nama Perwakilan                |
+        | `spei_participant.representative_title`    | Jabatan                        |
+        | `spei_participant.email`                   | Email                          |
+        | `spei_participant.phone_number`            | Nomor Telepon                  |
+        | `spei_participant.website`                 | Situs Web                      |
+        | `spei_participant.address`                 | Alamat                         |
+        | `spei_participant.province`                | Provinsi                       |
+        | `spei_participant.district`                | Kabupaten/Kota                 |
+        | `spei_participant.sub_district`            | Kecamatan                      |
+        | `spei_participant.village`                 | Kodepos                        |
+
+        ### Representative Contact Section (Step 4/8)
+
+        | JSON Payload Field            | UI Form Field      |
+        | ----------------------------- | ------------------ |
+        | `representative.organization` | Organisasi/Entitas |
+        | `representative.full_name`    | Nama Lengkap       |
+        | `representative.position`     | Jabatan            |
+        | `representative.email`        | Email              |
+        | `representative.phone_number` | Nomor Telepon      |
+
+        ### Mitigation Location Section (Step 5/8)
+
+        | JSON Payload Field      | UI Form Field        |
+        | ----------------------- | -------------------- |
+        | `location.province`     | Provinsi             |
+        | `location.district`     | Kabupaten/Kota       |
+        | `location.sub_district` | Kecamatan            |
+        | `location.village`      | Dusun/Desa/Kelurahan |
+        | `location.postal_code`  | Kodepos              |
+        | `location.longitude`    | Longitude            |
+        | `location.latitude`     | Latitude             |
+
+        ### Project Duration Section (Step 6/8)
+
+        | JSON Payload Field                  | UI Form Field               |
+        | ----------------------------------- | --------------------------- |
+        | `project_duration.project_category` | Kategori Proyek             |
+        | `project_duration.start_date`       | Tanggal Mulai Durasi Proyek |
+
+        ### GRK Credit Contribution Section (Step 7/8)
+
+        | JSON Payload Field                          | UI Form Field                                  |
+        | ------------------------------------------- | ---------------------------------------------- |
+        | `grk_contribution.contribution_explanation` | Penjelasan Kontribusi untuk Pembeli Kredit GRK |
+
+        ### Project Analysis Section (Step 8/8)
+
+        | JSON Payload Field                      | UI Form Field                                                  |
+        | --------------------------------------- | -------------------------------------------------------------- |
+        | `analyst.required_by_government_policy` | Apakah aksi mitigasi ini diwajibkan oleh kebijakan pemerintah? |
+        | `analyst.implementation_barriers`       | Hambatan pelaksanaan                                           |
+      parameters:
+      - description: Chapter number
+        enum:
+        - 1
+        - 2
+        in: path
+        name: chapter
+        required: true
+        type: integer
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: string
+      - description: DRAM chapter payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.mitigationActionOnChangeRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Update DRAM Document Chapter
       tags:
       - DRAM
   /organization/:
