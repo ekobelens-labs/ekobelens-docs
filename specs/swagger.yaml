@@ -28,6 +28,13 @@ definitions:
       name:
         type: string
     type: object
+  ai.HistoryAI:
+    properties:
+      system:
+        type: string
+      user:
+        type: string
+    type: object
   apperror.Error:
     properties:
       formatted:
@@ -71,6 +78,13 @@ definitions:
       errors: {}
       request_id:
         type: string
+    type: object
+  v1.AskAIRequest:
+    properties:
+      question:
+        type: string
+    required:
+    - question
     type: object
   v1.activityTitleRequest:
     properties:
@@ -596,6 +610,93 @@ paths:
       summary: Get List of Villages by Sub-District Code
       tags:
       - Address
+  /ai/ask:
+    post:
+      consumes:
+      - application/json
+      description: Ask AI
+      parameters:
+      - description: Request Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.AskAIRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+      security:
+      - BearerAuth: []
+      summary: Ask AI
+      tags:
+      - AI
+  /ai/history:
+    get:
+      consumes:
+      - application/json
+      description: Get AI History
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/ai.HistoryAI'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+      security:
+      - BearerAuth: []
+      summary: Get AI History
+      tags:
+      - AI
   /auth/login:
     post:
       consumes:
@@ -637,6 +738,40 @@ paths:
       summary: Login
       tags:
       - Auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: Revoke all refresh tokens for a user and client
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  type: object
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      summary: Logout
+      tags:
+      - Auth
   /auth/refresh:
     post:
       consumes:
@@ -675,6 +810,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
       summary: Refresh Token
       tags:
       - Auth
