@@ -79,6 +79,173 @@ definitions:
       request_id:
         type: string
     type: object
+  document.Annotation:
+    properties:
+      bold:
+        type: boolean
+      code:
+        type: boolean
+      color:
+        type: string
+      italic:
+        type: boolean
+      strikethrough:
+        type: boolean
+      underline:
+        type: boolean
+    type: object
+  document.BulletedListBlock:
+    properties:
+      color:
+        type: string
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.DividerBlock:
+    type: object
+  document.EquationBlock:
+    properties:
+      expression:
+        type: string
+    type: object
+  document.EquationContent:
+    properties:
+      expression:
+        type: string
+    type: object
+  document.ExternalFile:
+    properties:
+      url:
+        type: string
+    type: object
+  document.File:
+    properties:
+      expiry_time:
+        type: string
+      url:
+        type: string
+    type: object
+  document.HeadingBlock:
+    properties:
+      color:
+        type: string
+      is_toggleable:
+        type: boolean
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.ImageBlock:
+    properties:
+      caption:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+      external:
+        $ref: '#/definitions/document.ExternalFile'
+      file:
+        $ref: '#/definitions/document.File'
+      type:
+        description: '"external" or "file"'
+        type: string
+    type: object
+  document.MentionContent:
+    properties:
+      page:
+        $ref: '#/definitions/document.PageMention'
+      type:
+        type: string
+      user:
+        $ref: '#/definitions/document.UserMention'
+    type: object
+  document.NumberedListBlock:
+    properties:
+      color:
+        type: string
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.PageMention:
+    properties:
+      id:
+        type: string
+    type: object
+  document.ParagraphBlock:
+    properties:
+      color:
+        type: string
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.RichText:
+    properties:
+      annotations:
+        $ref: '#/definitions/document.Annotation'
+      equation:
+        $ref: '#/definitions/document.EquationContent'
+      href:
+        type: string
+      mention:
+        $ref: '#/definitions/document.MentionContent'
+      plain_text:
+        type: string
+      text:
+        $ref: '#/definitions/document.TextContent'
+      type:
+        type: string
+    type: object
+  document.TableBlock:
+    properties:
+      has_column_header:
+        type: boolean
+      has_row_header:
+        type: boolean
+      table_width:
+        type: integer
+    type: object
+  document.TableRowBlock:
+    properties:
+      cells:
+        items:
+          items:
+            $ref: '#/definitions/document.RichText'
+          type: array
+        type: array
+    type: object
+  document.TextContent:
+    properties:
+      content:
+        type: string
+      link:
+        type: string
+    type: object
+  document.TitleBlock:
+    properties:
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.UserMention:
+    properties:
+      id:
+        type: string
+    type: object
+  uuid.NullUUID:
+    properties:
+      uuid:
+        type: string
+      valid:
+        description: Valid is true if UUID is not NULL
+        type: boolean
+    type: object
   v1.AskAIRequest:
     properties:
       question:
@@ -92,6 +259,57 @@ definitions:
         type: string
     required:
     - activity_title
+    type: object
+  v1.blockResponse:
+    properties:
+      bulleted_list_item:
+        $ref: '#/definitions/document.BulletedListBlock'
+      created_at:
+        type: string
+      created_by:
+        type: string
+      divider:
+        $ref: '#/definitions/document.DividerBlock'
+      equation:
+        $ref: '#/definitions/document.EquationBlock'
+      has_children:
+        type: boolean
+      heading_1:
+        $ref: '#/definitions/document.HeadingBlock'
+      heading_2:
+        $ref: '#/definitions/document.HeadingBlock'
+      heading_3:
+        $ref: '#/definitions/document.HeadingBlock'
+      id:
+        type: string
+      image:
+        $ref: '#/definitions/document.ImageBlock'
+      in_trash:
+        type: boolean
+      numbered_list_item:
+        $ref: '#/definitions/document.NumberedListBlock'
+      object:
+        type: string
+      paragraph:
+        $ref: '#/definitions/document.ParagraphBlock'
+      parent:
+        $ref: '#/definitions/v1.parentResponse'
+      properties:
+        items:
+          type: integer
+        type: array
+      table:
+        $ref: '#/definitions/document.TableBlock'
+      table_row:
+        $ref: '#/definitions/document.TableRowBlock'
+      title:
+        $ref: '#/definitions/document.TitleBlock'
+      type:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
     type: object
   v1.createOrganizationRequest:
     properties:
@@ -204,6 +422,15 @@ definitions:
     - sub_district
     - village
     type: object
+  v1.parentResponse:
+    properties:
+      block_id:
+        $ref: '#/definitions/uuid.NullUUID'
+      type:
+        type: string
+      workspace:
+        type: boolean
+    type: object
   v1.projectAnalystRequest:
     properties:
       implementation_barriers:
@@ -213,12 +440,16 @@ definitions:
     type: object
   v1.projectDurationRequest:
     properties:
+      duration:
+        type: string
       project_category:
         type: string
       start_date:
         type: string
     required:
+    - duration
     - project_category
+    - start_date
     type: object
   v1.refreshRequest:
     properties:
@@ -277,6 +508,8 @@ definitions:
         type: string
       phone_number:
         type: string
+      postal_code:
+        type: string
       province:
         description: Location Detail
         type: string
@@ -290,10 +523,8 @@ definitions:
       spe_grk_ownership_ratio:
         maximum: 100
         minimum: 0
-        type: integer
+        type: number
       sub_district:
-        type: string
-      village:
         type: string
       website:
         type: string
@@ -304,13 +535,13 @@ definitions:
     - organization
     - organization_type
     - phone_number
+    - postal_code
     - province
     - representative_name
     - representative_title
     - role_in_mitigation
     - spe_grk_ownership_ratio
     - sub_district
-    - village
     type: object
   v1.tokenPairResponse:
     properties:
@@ -815,6 +1046,54 @@ paths:
       summary: Refresh Token
       tags:
       - Auth
+  /documents/{document_id}/generate-pages:
+    post:
+      consumes:
+      - application/json
+      description: Generate pages based on the provided document ID
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/v1.blockResponse'
+                  type: array
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Generate Pages from Document
+      tags:
+      - Document
   /dram/chapter/{chapter}:
     post:
       consumes:
@@ -854,7 +1133,7 @@ paths:
         | `spei_participant.province`                | Provinsi                       |
         | `spei_participant.district`                | Kabupaten/Kota                 |
         | `spei_participant.sub_district`            | Kecamatan                      |
-        | `spei_participant.village`                 | Kodepos                        |
+        | `spei_participant.postal_code`                 | Kodepos                        |
 
         ### Representative Contact Section (Step 4/8)
 
@@ -884,6 +1163,7 @@ paths:
         | ----------------------------------- | --------------------------- |
         | `project_duration.project_category` | Kategori Proyek             |
         | `project_duration.start_date`       | Tanggal Mulai Durasi Proyek |
+        | `project_duration.duration`       | Tanggal Durasi Proyek |
 
         ### GRK Credit Contribution Section (Step 7/8)
 
@@ -986,7 +1266,7 @@ paths:
         | `spei_participant.province`                | Provinsi                       |
         | `spei_participant.district`                | Kabupaten/Kota                 |
         | `spei_participant.sub_district`            | Kecamatan                      |
-        | `spei_participant.village`                 | Kodepos                        |
+        | `spei_participant.postal_code`                 | Kodepos                        |
 
         ### Representative Contact Section (Step 4/8)
 
@@ -1016,6 +1296,7 @@ paths:
         | ----------------------------------- | --------------------------- |
         | `project_duration.project_category` | Kategori Proyek             |
         | `project_duration.start_date`       | Tanggal Mulai Durasi Proyek |
+        | `project_duration.duration`       | Tanggal Durasi Proyek |
 
         ### GRK Credit Contribution Section (Step 7/8)
 
