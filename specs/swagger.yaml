@@ -79,6 +79,165 @@ definitions:
       request_id:
         type: string
     type: object
+  document.Annotation:
+    properties:
+      bold:
+        type: boolean
+      code:
+        type: boolean
+      color:
+        type: string
+      italic:
+        type: boolean
+      strikethrough:
+        type: boolean
+      underline:
+        type: boolean
+    type: object
+  document.BulletedListBlock:
+    properties:
+      color:
+        type: string
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.DividerBlock:
+    type: object
+  document.EquationBlock:
+    properties:
+      expression:
+        type: string
+    type: object
+  document.EquationContent:
+    properties:
+      expression:
+        type: string
+    type: object
+  document.ExternalFile:
+    properties:
+      url:
+        type: string
+    type: object
+  document.File:
+    properties:
+      expiry_time:
+        type: string
+      url:
+        type: string
+    type: object
+  document.HeadingBlock:
+    properties:
+      color:
+        type: string
+      is_toggleable:
+        type: boolean
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.ImageBlock:
+    properties:
+      caption:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+      external:
+        $ref: '#/definitions/document.ExternalFile'
+      file:
+        $ref: '#/definitions/document.File'
+      type:
+        description: '"external" or "file"'
+        type: string
+    type: object
+  document.MentionContent:
+    properties:
+      page:
+        $ref: '#/definitions/document.PageMention'
+      type:
+        type: string
+      user:
+        $ref: '#/definitions/document.UserMention'
+    type: object
+  document.NumberedListBlock:
+    properties:
+      color:
+        type: string
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.PageMention:
+    properties:
+      id:
+        type: string
+    type: object
+  document.ParagraphBlock:
+    properties:
+      color:
+        type: string
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.RichText:
+    properties:
+      annotations:
+        $ref: '#/definitions/document.Annotation'
+      equation:
+        $ref: '#/definitions/document.EquationContent'
+      href:
+        type: string
+      mention:
+        $ref: '#/definitions/document.MentionContent'
+      plain_text:
+        type: string
+      text:
+        $ref: '#/definitions/document.TextContent'
+      type:
+        type: string
+    type: object
+  document.TableBlock:
+    properties:
+      has_column_header:
+        type: boolean
+      has_row_header:
+        type: boolean
+      table_width:
+        type: integer
+    type: object
+  document.TableRowBlock:
+    properties:
+      cells:
+        items:
+          items:
+            $ref: '#/definitions/document.RichText'
+          type: array
+        type: array
+    type: object
+  document.TextContent:
+    properties:
+      content:
+        type: string
+      link:
+        type: string
+    type: object
+  document.TitleBlock:
+    properties:
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
+  document.UserMention:
+    properties:
+      id:
+        type: string
+    type: object
   v1.AskAIRequest:
     properties:
       question:
@@ -92,6 +251,53 @@ definitions:
         type: string
     required:
     - activity_title
+    type: object
+  v1.blockResponse:
+    properties:
+      bulleted_list_item:
+        $ref: '#/definitions/document.BulletedListBlock'
+      created_at:
+        type: string
+      created_by:
+        type: string
+      divider:
+        $ref: '#/definitions/document.DividerBlock'
+      equation:
+        $ref: '#/definitions/document.EquationBlock'
+      has_children:
+        type: boolean
+      heading_1:
+        $ref: '#/definitions/document.HeadingBlock'
+      heading_2:
+        $ref: '#/definitions/document.HeadingBlock'
+      heading_3:
+        $ref: '#/definitions/document.HeadingBlock'
+      id:
+        type: string
+      image:
+        $ref: '#/definitions/document.ImageBlock'
+      in_trash:
+        type: boolean
+      numbered_list_item:
+        $ref: '#/definitions/document.NumberedListBlock'
+      object:
+        type: string
+      paragraph:
+        $ref: '#/definitions/document.ParagraphBlock'
+      parent:
+        $ref: '#/definitions/v1.parentResponse'
+      table:
+        $ref: '#/definitions/document.TableBlock'
+      table_row:
+        $ref: '#/definitions/document.TableRowBlock'
+      title:
+        $ref: '#/definitions/document.TitleBlock'
+      type:
+        type: string
+      updated_at:
+        type: string
+      updated_by:
+        type: string
     type: object
   v1.createOrganizationRequest:
     properties:
@@ -853,6 +1059,100 @@ paths:
       summary: Refresh Token
       tags:
       - Auth
+  /blocks/{block_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a block by its ID
+      parameters:
+      - description: Block ID
+        in: path
+        name: block_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.blockResponse'
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get Block
+      tags:
+      - Document
+  /blocks/{block_id}/children:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve child blocks of a specified parent block
+      parameters:
+      - description: Block ID
+        in: path
+        name: block_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/v1.blockResponse'
+                  type: array
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get Child Blocks
+      tags:
+      - Document
   /documents/{document_id}/generate-pages:
     post:
       consumes:
@@ -915,11 +1215,12 @@ paths:
 
         ### General Description Section (Step 2/8)
 
-        | JSON Payload Field                    | UI Form Field                             |
-        | ------------------------------------- | ----------------------------------------- |
-        | `general_description.organization`    | Organisasi/Entitas                        |
-        | `general_description.activity_status` | Status Kegiatan (Rencana/Sedang Berjalan) |
-        | `general_description.general_purpose` | Tujuan Umum                               |
+        | JSON Payload Field                      | UI Form Field                             |
+        | --------------------------------------- | ----------------------------------------- |
+        | `general_description.organization`      | Organisasi/Entitas                        |
+        | `general_description.activity_status`   | Status Kegiatan (Rencana/Sedang Berjalan) |
+        | `general_description.activity_duration` | Lama Berjalan                             |
+        | `general_description.general_purpose`   | Tujuan Umum                               |
 
         ### SPEI Participant Identity Section (Step 3/8)
 
@@ -938,7 +1239,7 @@ paths:
         | `spei_participant.province`                | Provinsi                       |
         | `spei_participant.district`                | Kabupaten/Kota                 |
         | `spei_participant.sub_district`            | Kecamatan                      |
-        | `spei_participant.postal_code`                 | Kodepos                        |
+        | `spei_participant.postal_code`             | Kodepos                        |
 
         ### Representative Contact Section (Step 4/8)
 
@@ -968,7 +1269,7 @@ paths:
         | ----------------------------------- | --------------------------- |
         | `project_duration.project_category` | Kategori Proyek             |
         | `project_duration.start_date`       | Tanggal Mulai Durasi Proyek |
-        | `project_duration.duration`       | Tanggal Durasi Proyek |
+        | `project_duration.duration`         | Tanggal Durasi Proyek       |
 
         ### GRK Credit Contribution Section (Step 7/8)
 
@@ -1048,11 +1349,12 @@ paths:
 
         ### General Description Section (Step 2/8)
 
-        | JSON Payload Field                    | UI Form Field                             |
-        | ------------------------------------- | ----------------------------------------- |
-        | `general_description.organization`    | Organisasi/Entitas                        |
-        | `general_description.activity_status` | Status Kegiatan (Rencana/Sedang Berjalan) |
-        | `general_description.general_purpose` | Tujuan Umum                               |
+        | JSON Payload Field                      | UI Form Field                             |
+        | --------------------------------------- | ----------------------------------------- |
+        | `general_description.organization`      | Organisasi/Entitas                        |
+        | `general_description.activity_status`   | Status Kegiatan (Rencana/Sedang Berjalan) |
+        | `general_description.activity_duration` | Lama Berjalan                             |
+        | `general_description.general_purpose`   | Tujuan Umum                               |
 
         ### SPEI Participant Identity Section (Step 3/8)
 
@@ -1071,7 +1373,7 @@ paths:
         | `spei_participant.province`                | Provinsi                       |
         | `spei_participant.district`                | Kabupaten/Kota                 |
         | `spei_participant.sub_district`            | Kecamatan                      |
-        | `spei_participant.postal_code`                 | Kodepos                        |
+        | `spei_participant.postal_code`             | Kodepos                        |
 
         ### Representative Contact Section (Step 4/8)
 
@@ -1101,7 +1403,7 @@ paths:
         | ----------------------------------- | --------------------------- |
         | `project_duration.project_category` | Kategori Proyek             |
         | `project_duration.start_date`       | Tanggal Mulai Durasi Proyek |
-        | `project_duration.duration`       | Tanggal Durasi Proyek |
+        | `project_duration.duration`         | Tanggal Durasi Proyek       |
 
         ### GRK Credit Contribution Section (Step 7/8)
 
@@ -1209,6 +1511,52 @@ paths:
       summary: Create Organization
       tags:
       - Organization
+  /pages/{page_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a page by its ID
+      parameters:
+      - description: Page ID
+        in: path
+        name: page_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.pageResponse'
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get Page
+      tags:
+      - Document
   /user/:
     post:
       consumes:
