@@ -32,8 +32,8 @@ import GeneratedChangelog from './generated/_generated-changelog.mdx';
 
 | Environment | REST Base URL | Notes |
 | --- | --- | --- |
-| Production | `https://api.ekobelens.com/api/v1` | Primary cluster with 99.9% uptime SLA |
-| Staging | `https://api-staging.ekobelens.com/api/v1` | Mirrors prod schemas for pre-release testing |
+| Production | `https://api.ekobelens.com/v1` | Primary cluster with 99.9% uptime SLA |
+| Staging | `https://api-stg.ekobelens.com/v1` | Mirrors prod schemas for pre-release testing |
 
 - All responses include `request_id` headers for tracing across services.
 - Rate limiting is applied per workspace; throttled requests return `429` with a `Retry-After` header.
