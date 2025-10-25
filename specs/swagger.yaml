@@ -1,4 +1,4 @@
-basePath: /api/external/v1
+basePath: /v1
 definitions:
   address.District:
     properties:
