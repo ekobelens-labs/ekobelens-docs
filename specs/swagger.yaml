@@ -107,6 +107,8 @@ definitions:
         - PLANNING
         - ONGOING
         type: string
+      duration:
+        type: string
       general_purpose:
         type: string
       organization:
