@@ -79,173 +79,6 @@ definitions:
       request_id:
         type: string
     type: object
-  document.Annotation:
-    properties:
-      bold:
-        type: boolean
-      code:
-        type: boolean
-      color:
-        type: string
-      italic:
-        type: boolean
-      strikethrough:
-        type: boolean
-      underline:
-        type: boolean
-    type: object
-  document.BulletedListBlock:
-    properties:
-      color:
-        type: string
-      rich_text:
-        items:
-          $ref: '#/definitions/document.RichText'
-        type: array
-    type: object
-  document.DividerBlock:
-    type: object
-  document.EquationBlock:
-    properties:
-      expression:
-        type: string
-    type: object
-  document.EquationContent:
-    properties:
-      expression:
-        type: string
-    type: object
-  document.ExternalFile:
-    properties:
-      url:
-        type: string
-    type: object
-  document.File:
-    properties:
-      expiry_time:
-        type: string
-      url:
-        type: string
-    type: object
-  document.HeadingBlock:
-    properties:
-      color:
-        type: string
-      is_toggleable:
-        type: boolean
-      rich_text:
-        items:
-          $ref: '#/definitions/document.RichText'
-        type: array
-    type: object
-  document.ImageBlock:
-    properties:
-      caption:
-        items:
-          $ref: '#/definitions/document.RichText'
-        type: array
-      external:
-        $ref: '#/definitions/document.ExternalFile'
-      file:
-        $ref: '#/definitions/document.File'
-      type:
-        description: '"external" or "file"'
-        type: string
-    type: object
-  document.MentionContent:
-    properties:
-      page:
-        $ref: '#/definitions/document.PageMention'
-      type:
-        type: string
-      user:
-        $ref: '#/definitions/document.UserMention'
-    type: object
-  document.NumberedListBlock:
-    properties:
-      color:
-        type: string
-      rich_text:
-        items:
-          $ref: '#/definitions/document.RichText'
-        type: array
-    type: object
-  document.PageMention:
-    properties:
-      id:
-        type: string
-    type: object
-  document.ParagraphBlock:
-    properties:
-      color:
-        type: string
-      rich_text:
-        items:
-          $ref: '#/definitions/document.RichText'
-        type: array
-    type: object
-  document.RichText:
-    properties:
-      annotations:
-        $ref: '#/definitions/document.Annotation'
-      equation:
-        $ref: '#/definitions/document.EquationContent'
-      href:
-        type: string
-      mention:
-        $ref: '#/definitions/document.MentionContent'
-      plain_text:
-        type: string
-      text:
-        $ref: '#/definitions/document.TextContent'
-      type:
-        type: string
-    type: object
-  document.TableBlock:
-    properties:
-      has_column_header:
-        type: boolean
-      has_row_header:
-        type: boolean
-      table_width:
-        type: integer
-    type: object
-  document.TableRowBlock:
-    properties:
-      cells:
-        items:
-          items:
-            $ref: '#/definitions/document.RichText'
-          type: array
-        type: array
-    type: object
-  document.TextContent:
-    properties:
-      content:
-        type: string
-      link:
-        type: string
-    type: object
-  document.TitleBlock:
-    properties:
-      rich_text:
-        items:
-          $ref: '#/definitions/document.RichText'
-        type: array
-    type: object
-  document.UserMention:
-    properties:
-      id:
-        type: string
-    type: object
-  uuid.NullUUID:
-    properties:
-      uuid:
-        type: string
-      valid:
-        description: Valid is true if UUID is not NULL
-        type: boolean
-    type: object
   v1.AskAIRequest:
     properties:
       question:
@@ -259,57 +92,6 @@ definitions:
         type: string
     required:
     - activity_title
-    type: object
-  v1.blockResponse:
-    properties:
-      bulleted_list_item:
-        $ref: '#/definitions/document.BulletedListBlock'
-      created_at:
-        type: string
-      created_by:
-        type: string
-      divider:
-        $ref: '#/definitions/document.DividerBlock'
-      equation:
-        $ref: '#/definitions/document.EquationBlock'
-      has_children:
-        type: boolean
-      heading_1:
-        $ref: '#/definitions/document.HeadingBlock'
-      heading_2:
-        $ref: '#/definitions/document.HeadingBlock'
-      heading_3:
-        $ref: '#/definitions/document.HeadingBlock'
-      id:
-        type: string
-      image:
-        $ref: '#/definitions/document.ImageBlock'
-      in_trash:
-        type: boolean
-      numbered_list_item:
-        $ref: '#/definitions/document.NumberedListBlock'
-      object:
-        type: string
-      paragraph:
-        $ref: '#/definitions/document.ParagraphBlock'
-      parent:
-        $ref: '#/definitions/v1.parentResponse'
-      properties:
-        items:
-          type: integer
-        type: array
-      table:
-        $ref: '#/definitions/document.TableBlock'
-      table_row:
-        $ref: '#/definitions/document.TableRowBlock'
-      title:
-        $ref: '#/definitions/document.TitleBlock'
-      type:
-        type: string
-      updated_at:
-        type: string
-      updated_by:
-        type: string
     type: object
   v1.createOrganizationRequest:
     properties:
@@ -422,10 +204,33 @@ definitions:
     - sub_district
     - village
     type: object
+  v1.pageResponse:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      id:
+        type: string
+      in_trash:
+        type: boolean
+      object:
+        type: string
+      parent:
+        $ref: '#/definitions/v1.parentResponse'
+      properties:
+        items:
+          type: integer
+        type: array
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
   v1.parentResponse:
     properties:
       block_id:
-        $ref: '#/definitions/uuid.NullUUID'
+        type: string
       type:
         type: string
       workspace:
@@ -1067,9 +872,7 @@ paths:
             - $ref: '#/definitions/constants.ResponseBody'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/v1.blockResponse'
-                  type: array
+                  $ref: '#/definitions/v1.pageResponse'
                 request_id:
                   type: string
               type: object
