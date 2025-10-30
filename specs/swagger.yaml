@@ -238,6 +238,33 @@ definitions:
       id:
         type: string
     type: object
+  resourceful.Response-tabledefinition_MethodologyListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/tabledefinition.MethodologyListResponse'
+        type: array
+      pagination: {}
+    type: object
+  tabledefinition.MethodologyListResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      letter:
+        type: string
+      name:
+        type: string
+      number:
+        type: string
+      updated_at:
+        type: string
+    type: object
   v1.AskAIRequest:
     properties:
       question:
@@ -286,6 +313,8 @@ definitions:
         $ref: '#/definitions/document.ParagraphBlock'
       parent:
         $ref: '#/definitions/v1.parentResponse'
+      position:
+        type: string
       table:
         $ref: '#/definitions/document.TableBlock'
       table_row:
@@ -1468,6 +1497,56 @@ paths:
       security:
       - BearerAuth: []
       summary: Update DRAM Document Chapter
+      tags:
+      - DRAM
+  /dram/methodologies:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of methodologies
+      parameters:
+      - default: 1
+        description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      - description: Cursor for pagination (after)
+        in: query
+        name: start_cursor
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/resourceful.Response-tabledefinition_MethodologyListResponse'
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get Methodology List
       tags:
       - DRAM
   /organization/:
