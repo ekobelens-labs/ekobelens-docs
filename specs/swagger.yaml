@@ -103,6 +103,17 @@ definitions:
           $ref: '#/definitions/document.RichText'
         type: array
     type: object
+  document.CalloutBlock:
+    properties:
+      color:
+        type: string
+      icon:
+        type: string
+      rich_text:
+        items:
+          $ref: '#/definitions/document.RichText'
+        type: array
+    type: object
   document.DividerBlock:
     type: object
   document.EquationBlock:
@@ -117,12 +128,19 @@ definitions:
     type: object
   document.ExternalFile:
     properties:
+      id:
+        allOf:
+        - $ref: '#/definitions/uuid.NullUUID'
+        description: Reference to file table
       url:
         type: string
     type: object
   document.File:
     properties:
       expiry_time:
+        type: string
+      id:
+        description: Reference to file table
         type: string
       url:
         type: string
@@ -169,6 +187,26 @@ definitions:
         items:
           $ref: '#/definitions/document.RichText'
         type: array
+    type: object
+  document.PageCover:
+    properties:
+      external:
+        $ref: '#/definitions/document.ExternalFile'
+      file:
+        $ref: '#/definitions/document.File'
+      type:
+        type: string
+    type: object
+  document.PageIcon:
+    properties:
+      emoji:
+        type: string
+      external:
+        $ref: '#/definitions/document.ExternalFile'
+      file:
+        $ref: '#/definitions/document.File'
+      type:
+        type: string
     type: object
   document.PageMention:
     properties:
@@ -226,33 +264,45 @@ definitions:
       link:
         type: string
     type: object
-  document.TitleBlock:
+  document.Title:
     properties:
-      rich_text:
+      title:
         items:
           $ref: '#/definitions/document.RichText'
         type: array
+    type: object
+  document.TitleBlock:
+    properties:
+      title:
+        $ref: '#/definitions/document.Title'
     type: object
   document.UserMention:
     properties:
       id:
         type: string
     type: object
-  resourceful.Response-tabledefinition_MethodologyListResponse:
+  dram.MethodologyCategoryListResponse:
     properties:
-      data:
-        items:
-          $ref: '#/definitions/tabledefinition.MethodologyListResponse'
-        type: array
-      pagination: {}
-      request_id:
+      created_at:
+        type: string
+      external_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
         type: string
     type: object
-  tabledefinition.MethodologyListResponse:
+  dram.MethodologyListResponse:
     properties:
       created_at:
         type: string
       description:
+        type: string
+      document_id:
+        $ref: '#/definitions/uuid.NullUUID'
+      external_url:
         type: string
       id:
         type: string
@@ -264,8 +314,38 @@ definitions:
         type: string
       number:
         type: string
+      source:
+        type: string
       updated_at:
         type: string
+    type: object
+  resourceful.Response-dram_MethodologyCategoryListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dram.MethodologyCategoryListResponse'
+        type: array
+      pagination: {}
+      request_id:
+        type: string
+    type: object
+  resourceful.Response-dram_MethodologyListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dram.MethodologyListResponse'
+        type: array
+      pagination: {}
+      request_id:
+        type: string
+    type: object
+  uuid.NullUUID:
+    properties:
+      uuid:
+        type: string
+      valid:
+        description: Valid is true if UUID is not NULL
+        type: boolean
     type: object
   v1.AskAIRequest:
     properties:
@@ -285,6 +365,8 @@ definitions:
     properties:
       bulleted_list_item:
         $ref: '#/definitions/document.BulletedListBlock'
+      callout:
+        $ref: '#/definitions/document.CalloutBlock'
       created_at:
         type: string
       created_by:
@@ -336,6 +418,15 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  v1.dramCriteriaResponse:
+    properties:
+      block_reference_id:
+        $ref: '#/definitions/uuid.NullUUID'
+      id:
+        type: string
+      value:
+        type: string
     type: object
   v1.generalDescriptionRequest:
     properties:
@@ -445,22 +536,26 @@ definitions:
     type: object
   v1.pageResponse:
     properties:
+      cover:
+        $ref: '#/definitions/document.PageCover'
       created_at:
         type: string
       created_by:
         type: string
+      icon:
+        $ref: '#/definitions/document.PageIcon'
       id:
         type: string
       in_trash:
+        type: boolean
+      is_locked:
         type: boolean
       object:
         type: string
       parent:
         $ref: '#/definitions/v1.parentResponse'
       properties:
-        items:
-          type: integer
-        type: array
+        $ref: '#/definitions/document.TitleBlock'
       updated_at:
         type: string
       updated_by:
@@ -486,13 +581,13 @@ definitions:
     properties:
       duration:
         type: string
-      project_category:
+      project_category_id:
         type: string
       start_date:
         type: string
     required:
     - duration
-    - project_category
+    - project_category_id
     - start_date
     type: object
   v1.refreshRequest:
@@ -611,6 +706,8 @@ definitions:
         - PLANNING
         - ONGOING
         type: string
+      duration:
+        type: string
       general_purpose:
         type: string
       organization:
@@ -619,6 +716,12 @@ definitions:
   v1.updateMitigationLocationRequest:
     properties:
       district:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      postal_code:
         type: string
       province:
         type: string
@@ -636,10 +739,10 @@ definitions:
     type: object
   v1.updateProjectDurationRequest:
     properties:
-      end_date:
+      duration:
         type: string
-      project_category:
-        type: string
+      project_category_id:
+        $ref: '#/definitions/uuid.NullUUID'
       start_date:
         type: string
     type: object
@@ -670,6 +773,8 @@ definitions:
         type: string
       phone_number:
         type: string
+      postal_code:
+        type: string
       province:
         description: Location Detail
         type: string
@@ -686,8 +791,6 @@ definitions:
         type: integer
       sub_district:
         type: string
-      village:
-        type: string
       website:
         type: string
     type: object
@@ -700,7 +803,7 @@ info:
   title: Ekobelens API
   version: "1.0"
 paths:
-  /address/districts/{district_code}/sub-districts:
+  /addresses/districts/{district_code}/sub-districts:
     get:
       consumes:
       - application/json
@@ -748,8 +851,8 @@ paths:
       - BearerAuth: []
       summary: Get List of Sub-Districts by District Code
       tags:
-      - Address
-  /address/provinces:
+      - Addresses
+  /addresses/provinces:
     get:
       consumes:
       - application/json
@@ -786,8 +889,8 @@ paths:
       - BearerAuth: []
       summary: Get List of Provinces
       tags:
-      - Address
-  /address/provinces/{province_code}/districts:
+      - Addresses
+  /addresses/provinces/{province_code}/districts:
     get:
       consumes:
       - application/json
@@ -835,8 +938,8 @@ paths:
       - BearerAuth: []
       summary: Get List of Districts by Province Code
       tags:
-      - Address
-  /address/sub-districts/{sub_district_code}/villages:
+      - Addresses
+  /addresses/sub-districts/{sub_district_code}/villages:
     get:
       consumes:
       - application/json
@@ -884,12 +987,51 @@ paths:
       - BearerAuth: []
       summary: Get List of Villages by Sub-District Code
       tags:
-      - Address
-  /ai/ask:
+      - Addresses
+  /ai/conversations:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all AI conversation history for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/ai.HistoryAI'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/constants.ResponseBody'
+      security:
+      - BearerAuth: []
+      summary: Get AI Conversation History
+      tags:
+      - AI
     post:
       consumes:
       - application/json
-      description: Ask AI
+      description: Create a new AI conversation by asking a question
       parameters:
       - description: Request Body
         in: body
@@ -930,46 +1072,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Ask AI
-      tags:
-      - AI
-  /ai/history:
-    get:
-      consumes:
-      - application/json
-      description: Get AI History
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/constants.ResponseBody'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/ai.HistoryAI'
-                  type: array
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/constants.ResponseBody'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/constants.ResponseBody'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/constants.ResponseBody'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/constants.ResponseBody'
-      security:
-      - BearerAuth: []
-      summary: Get AI History
       tags:
       - AI
   /auth/login:
@@ -1135,7 +1237,7 @@ paths:
       - BearerAuth: []
       summary: Get Block
       tags:
-      - Document
+      - Blocks
   /blocks/{block_id}/children:
     get:
       consumes:
@@ -1146,6 +1248,15 @@ paths:
         in: path
         name: block_id
         required: true
+        type: string
+      - default: 1
+        description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - description: Cursor for pagination
+        in: query
+        name: start_cursor
         type: string
       produces:
       - application/json
@@ -1183,152 +1294,12 @@ paths:
       - BearerAuth: []
       summary: Get Child Blocks
       tags:
-      - Document
-  /documents/{document_id}/generate-pages:
+      - Blocks
+  /documents:
     post:
       consumes:
       - application/json
-      description: Generate pages based on the provided document ID
-      parameters:
-      - description: Document ID
-        in: path
-        name: document_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/constants.ResponseBody'
-            - properties:
-                data:
-                  $ref: '#/definitions/v1.pageResponse'
-                request_id:
-                  type: string
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/apperror.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/apperror.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/apperror.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/apperror.Error'
-      security:
-      - BearerAuth: []
-      summary: Generate Pages from Document
-      tags:
-      - Document
-  /dram/chapter/{chapter}:
-    post:
-      consumes:
-      - application/json
-      description: |
-        Create a new DRAM document chapter
-        ## Chapter 1 JSON Payload to UI Form Field Mapping
-
-        ### Activity Title Section (Step 1/8)
-
-        | JSON Payload Field              | UI Form Field                  |
-        | ------------------------------- | ------------------------------ |
-        | `activity_title.activity_title` | Judul Kegiatan / Aksi Mitigasi |
-
-        ### General Description Section (Step 2/8)
-
-        | JSON Payload Field                      | UI Form Field                             |
-        | --------------------------------------- | ----------------------------------------- |
-        | `general_description.organization`      | Organisasi/Entitas                        |
-        | `general_description.activity_status`   | Status Kegiatan (Rencana/Sedang Berjalan) |
-        | `general_description.activity_duration` | Lama Berjalan                             |
-        | `general_description.general_purpose`   | Tujuan Umum                               |
-
-        ### SPEI Participant Identity Section (Step 3/8)
-
-        | JSON Payload Field                         | UI Form Field                  |
-        | ------------------------------------------ | ------------------------------ |
-        | `spei_participant.organization`            | Organisasi/Entitas             |
-        | `spei_participant.organization_type`       | Jenis Organisasi/Entitas       |
-        | `spei_participant.role_in_mitigation`      | Peran dalam Aksi Mitigasi      |
-        | `spei_participant.spe_grk_ownership_ratio` | Bagian Kepemilikan SPE-GRK (%) |
-        | `spei_participant.representative_name`     | Nama Perwakilan                |
-        | `spei_participant.representative_title`    | Jabatan                        |
-        | `spei_participant.email`                   | Email                          |
-        | `spei_participant.phone_number`            | Nomor Telepon                  |
-        | `spei_participant.website`                 | Situs Web                      |
-        | `spei_participant.address`                 | Alamat                         |
-        | `spei_participant.province`                | Provinsi                       |
-        | `spei_participant.district`                | Kabupaten/Kota                 |
-        | `spei_participant.sub_district`            | Kecamatan                      |
-        | `spei_participant.postal_code`             | Kodepos                        |
-
-        ### Representative Contact Section (Step 4/8)
-
-        | JSON Payload Field            | UI Form Field      |
-        | ----------------------------- | ------------------ |
-        | `representative.organization` | Organisasi/Entitas |
-        | `representative.full_name`    | Nama Lengkap       |
-        | `representative.position`     | Jabatan            |
-        | `representative.email`        | Email              |
-        | `representative.phone_number` | Nomor Telepon      |
-
-        ### Mitigation Location Section (Step 5/8)
-
-        | JSON Payload Field      | UI Form Field        |
-        | ----------------------- | -------------------- |
-        | `location.province`     | Provinsi             |
-        | `location.district`     | Kabupaten/Kota       |
-        | `location.sub_district` | Kecamatan            |
-        | `location.village`      | Dusun/Desa/Kelurahan |
-        | `location.postal_code`  | Kodepos              |
-        | `location.longitude`    | Longitude            |
-        | `location.latitude`     | Latitude             |
-
-        ### Project Duration Section (Step 6/8)
-
-        | JSON Payload Field                  | UI Form Field               |
-        | ----------------------------------- | --------------------------- |
-        | `project_duration.project_category` | Kategori Proyek             |
-        | `project_duration.start_date`       | Tanggal Mulai Durasi Proyek |
-        | `project_duration.duration`         | Tanggal Durasi Proyek       |
-
-        ### GRK Credit Contribution Section (Step 7/8)
-
-        | JSON Payload Field                          | UI Form Field                                  |
-        | ------------------------------------------- | ---------------------------------------------- |
-        | `grk_contribution.contribution_explanation` | Penjelasan Kontribusi untuk Pembeli Kredit GRK |
-
-        ### Project Analysis Section (Step 8/8)
-
-        | JSON Payload Field                      | UI Form Field                                                  |
-        | --------------------------------------- | -------------------------------------------------------------- |
-        | `analyst.required_by_government_policy` | Apakah aksi mitigasi ini diwajibkan oleh kebijakan pemerintah? |
-        | `analyst.implementation_barriers`       | Hambatan pelaksanaan                                           |
-      parameters:
-      - description: Chapter number
-        enum:
-        - 1
-        - 2
-        in: path
-        name: chapter
-        required: true
-        type: integer
-      - description: DRAM chapter payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/v1.mitigationActionRequest'
+      description: Create a new blank document
       produces:
       - application/json
       responses:
@@ -1339,7 +1310,7 @@ paths:
             - $ref: '#/definitions/constants.ResponseBody'
             - properties:
                 data:
-                  $ref: '#/definitions/constants.DocumentIDEnvelope'
+                  type: string
                 request_id:
                   type: string
               type: object
@@ -1351,20 +1322,16 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/apperror.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/apperror.Error'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/apperror.Error'
       security:
       - BearerAuth: []
-      summary: Create DRAM Document Chapter
+      summary: Create Blank Document
       tags:
-      - DRAM
-  /dram/chapter/{chapter}/document/{document_id}:
+      - Documents
+  /documents/{document_id}/dram/chapters/{chapter}:
     patch:
       consumes:
       - application/json
@@ -1432,7 +1399,7 @@ paths:
 
         | JSON Payload Field                  | UI Form Field               |
         | ----------------------------------- | --------------------------- |
-        | `project_duration.project_category` | Kategori Proyek             |
+        | `project_duration.project_category_id` | Kategori Proyek             |
         | `project_duration.start_date`       | Tanggal Mulai Durasi Proyek |
         | `project_duration.duration`         | Tanggal Durasi Proyek       |
 
@@ -1449,6 +1416,11 @@ paths:
         | `analyst.required_by_government_policy` | Apakah aksi mitigasi ini diwajibkan oleh kebijakan pemerintah? |
         | `analyst.implementation_barriers`       | Hambatan pelaksanaan                                           |
       parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: string
       - description: Chapter number
         enum:
         - 1
@@ -1457,11 +1429,6 @@ paths:
         name: chapter
         required: true
         type: integer
-      - description: Document ID
-        in: path
-        name: document_id
-        required: true
-        type: string
       - description: DRAM chapter payload
         in: body
         name: request
@@ -1501,6 +1468,327 @@ paths:
       summary: Update DRAM Document Chapter
       tags:
       - DRAM
+    post:
+      consumes:
+      - application/json
+      description: |
+        Create a new DRAM document chapter
+        ## Chapter 1 JSON Payload to UI Form Field Mapping
+
+        ### Activity Title Section (Step 1/8)
+
+        | JSON Payload Field              | UI Form Field                  |
+        | ------------------------------- | ------------------------------ |
+        | `activity_title.activity_title` | Judul Kegiatan / Aksi Mitigasi |
+
+        ### General Description Section (Step 2/8)
+
+        | JSON Payload Field                      | UI Form Field                             |
+        | --------------------------------------- | ----------------------------------------- |
+        | `general_description.organization`      | Organisasi/Entitas                        |
+        | `general_description.activity_status`   | Status Kegiatan (Rencana/Sedang Berjalan) |
+        | `general_description.activity_duration` | Lama Berjalan                             |
+        | `general_description.general_purpose`   | Tujuan Umum                               |
+
+        ### SPEI Participant Identity Section (Step 3/8)
+
+        | JSON Payload Field                         | UI Form Field                  |
+        | ------------------------------------------ | ------------------------------ |
+        | `spei_participant.organization`            | Organisasi/Entitas             |
+        | `spei_participant.organization_type`       | Jenis Organisasi/Entitas       |
+        | `spei_participant.role_in_mitigation`      | Peran dalam Aksi Mitigasi      |
+        | `spei_participant.spe_grk_ownership_ratio` | Bagian Kepemilikan SPE-GRK (%) |
+        | `spei_participant.representative_name`     | Nama Perwakilan                |
+        | `spei_participant.representative_title`    | Jabatan                        |
+        | `spei_participant.email`                   | Email                          |
+        | `spei_participant.phone_number`            | Nomor Telepon                  |
+        | `spei_participant.website`                 | Situs Web                      |
+        | `spei_participant.address`                 | Alamat                         |
+        | `spei_participant.province`                | Provinsi                       |
+        | `spei_participant.district`                | Kabupaten/Kota                 |
+        | `spei_participant.sub_district`            | Kecamatan                      |
+        | `spei_participant.postal_code`             | Kodepos                        |
+
+        ### Representative Contact Section (Step 4/8)
+
+        | JSON Payload Field            | UI Form Field      |
+        | ----------------------------- | ------------------ |
+        | `representative.organization` | Organisasi/Entitas |
+        | `representative.full_name`    | Nama Lengkap       |
+        | `representative.position`     | Jabatan            |
+        | `representative.email`        | Email              |
+        | `representative.phone_number` | Nomor Telepon      |
+
+        ### Mitigation Location Section (Step 5/8)
+
+        | JSON Payload Field      | UI Form Field        |
+        | ----------------------- | -------------------- |
+        | `location.province`     | Provinsi             |
+        | `location.district`     | Kabupaten/Kota       |
+        | `location.sub_district` | Kecamatan            |
+        | `location.village`      | Dusun/Desa/Kelurahan |
+        | `location.postal_code`  | Kodepos              |
+        | `location.longitude`    | Longitude            |
+        | `location.latitude`     | Latitude             |
+
+        ### Project Duration Section (Step 6/8)
+
+        | JSON Payload Field                  | UI Form Field               |
+        | ----------------------------------- | --------------------------- |
+        | `project_duration.project_category_id` | Kategori Proyek             |
+        | `project_duration.start_date`       | Tanggal Mulai Durasi Proyek |
+        | `project_duration.duration`         | Tanggal Durasi Proyek       |
+
+        ### GRK Credit Contribution Section (Step 7/8)
+
+        | JSON Payload Field                          | UI Form Field                                  |
+        | ------------------------------------------- | ---------------------------------------------- |
+        | `grk_contribution.contribution_explanation` | Penjelasan Kontribusi untuk Pembeli Kredit GRK |
+
+        ### Project Analysis Section (Step 8/8)
+
+        | JSON Payload Field                      | UI Form Field                                                  |
+        | --------------------------------------- | -------------------------------------------------------------- |
+        | `analyst.required_by_government_policy` | Apakah aksi mitigasi ini diwajibkan oleh kebijakan pemerintah? |
+        | `analyst.implementation_barriers`       | Hambatan pelaksanaan                                           |
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: string
+      - description: Chapter number
+        enum:
+        - 1
+        - 2
+        in: path
+        name: chapter
+        required: true
+        type: integer
+      - description: DRAM chapter payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.mitigationActionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/constants.DocumentIDEnvelope'
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Create DRAM Document Chapter
+      tags:
+      - DRAM
+  /documents/{document_id}/dram/criteria:
+    post:
+      consumes:
+      - application/json
+      description: Create a new custom criteria option for a specific DRAM document
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/constants.IDEnvelope'
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Create Custom DRAM Criteria Option
+      tags:
+      - DRAM
+  /documents/{document_id}/dram/criteria/{criteria_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a custom criteria option for a specific DRAM document
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: string
+      - description: Criteria ID (Selection Option ID)
+        in: path
+        name: criteria_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete Custom DRAM Criteria Option
+      tags:
+      - DRAM
+  /documents/{document_id}/dram/methodologies/{methodology_id}/criteria:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve DRAM criteria selection options based on the provided
+        document ID and methodology
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: string
+      - description: Methodology ID
+        in: path
+        name: methodology_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/v1.dramCriteriaResponse'
+                  type: array
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get DRAM Criteria
+      tags:
+      - DRAM
+  /documents/{document_id}/pages:
+    post:
+      consumes:
+      - application/json
+      description: Generate pages based on the provided document ID
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.pageResponse'
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Generate Pages from Document
+      tags:
+      - Documents
   /dram/methodologies:
     get:
       consumes:
@@ -1534,7 +1822,7 @@ paths:
             - $ref: '#/definitions/constants.ResponseBody'
             - properties:
                 data:
-                  $ref: '#/definitions/resourceful.Response-tabledefinition_MethodologyListResponse'
+                  $ref: '#/definitions/resourceful.Response-dram_MethodologyListResponse'
                 request_id:
                   type: string
               type: object
@@ -1555,7 +1843,61 @@ paths:
       summary: Get Methodology List
       tags:
       - DRAM
-  /organization/:
+  /dram/methodology-categories:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of methodology categories
+      parameters:
+      - default: 1
+        description: Number of items to return
+        in: query
+        name: limit
+        type: integer
+      - description: Filter conditions
+        in: query
+        name: filters
+        type: string
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      - description: Cursor for pagination (after)
+        in: query
+        name: start_cursor
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/resourceful.Response-dram_MethodologyCategoryListResponse'
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Get Methodology Category List
+      tags:
+      - DRAM
+  /organizations:
     post:
       consumes:
       - application/json
@@ -1595,7 +1937,7 @@ paths:
             $ref: '#/definitions/apperror.Error'
       summary: Create Organization
       tags:
-      - Organization
+      - Organizations
   /pages/{page_id}:
     get:
       consumes:
@@ -1641,8 +1983,8 @@ paths:
       - BearerAuth: []
       summary: Get Page
       tags:
-      - Document
-  /user/:
+      - Pages
+  /users:
     post:
       consumes:
       - application/json
@@ -1682,7 +2024,7 @@ paths:
             $ref: '#/definitions/apperror.Error'
       summary: Register User
       tags:
-      - User
+      - Users
 schemes:
 - https
 swagger: "2.0"
