@@ -314,6 +314,8 @@ definitions:
         type: string
       number:
         type: string
+      page_id:
+        $ref: '#/definitions/uuid.NullUUID'
       source:
         type: string
       updated_at:
@@ -367,6 +369,8 @@ definitions:
         $ref: '#/definitions/document.BulletedListBlock'
       callout:
         $ref: '#/definitions/document.CalloutBlock'
+      chapter_id:
+        $ref: '#/definitions/uuid.NullUUID'
       created_at:
         type: string
       created_by:
@@ -411,6 +415,45 @@ definitions:
         type: string
       updated_by:
         type: string
+    type: object
+  v1.createBlockRequest:
+    properties:
+      after_id:
+        $ref: '#/definitions/uuid.NullUUID'
+      bulleted_list_item:
+        $ref: '#/definitions/document.BulletedListBlock'
+      callout:
+        $ref: '#/definitions/document.CalloutBlock'
+      chapter_id:
+        type: string
+      divider:
+        allOf:
+        - $ref: '#/definitions/document.DividerBlock'
+        description: Block type specific fields (only one should be provided based
+          on type)
+      equation:
+        $ref: '#/definitions/document.EquationBlock'
+      heading_1:
+        $ref: '#/definitions/document.HeadingBlock'
+      heading_2:
+        $ref: '#/definitions/document.HeadingBlock'
+      heading_3:
+        $ref: '#/definitions/document.HeadingBlock'
+      image:
+        $ref: '#/definitions/document.ImageBlock'
+      numbered_list_item:
+        $ref: '#/definitions/document.NumberedListBlock'
+      paragraph:
+        $ref: '#/definitions/document.ParagraphBlock'
+      table:
+        $ref: '#/definitions/document.TableBlock'
+      table_row:
+        $ref: '#/definitions/document.TableRowBlock'
+      type:
+        type: string
+    required:
+    - chapter_id
+    - type
     type: object
   v1.createOrganizationRequest:
     properties:
@@ -533,6 +576,17 @@ definitions:
     - province
     - sub_district
     - village
+    type: object
+  v1.moveBlockRequest:
+    properties:
+      after_id:
+        $ref: '#/definitions/uuid.NullUUID'
+      new_chapter_id:
+        $ref: '#/definitions/uuid.NullUUID'
+      new_parent_id:
+        type: string
+    required:
+    - new_parent_id
     type: object
   v1.pageResponse:
     properties:
@@ -693,6 +747,40 @@ definitions:
     properties:
       activity_title:
         type: string
+    type: object
+  v1.updateBlockRequest:
+    properties:
+      bulleted_list_item:
+        $ref: '#/definitions/document.BulletedListBlock'
+      callout:
+        $ref: '#/definitions/document.CalloutBlock'
+      divider:
+        allOf:
+        - $ref: '#/definitions/document.DividerBlock'
+        description: Block type specific fields (only one should be provided based
+          on type)
+      equation:
+        $ref: '#/definitions/document.EquationBlock'
+      heading_1:
+        $ref: '#/definitions/document.HeadingBlock'
+      heading_2:
+        $ref: '#/definitions/document.HeadingBlock'
+      heading_3:
+        $ref: '#/definitions/document.HeadingBlock'
+      image:
+        $ref: '#/definitions/document.ImageBlock'
+      numbered_list_item:
+        $ref: '#/definitions/document.NumberedListBlock'
+      paragraph:
+        $ref: '#/definitions/document.ParagraphBlock'
+      table:
+        $ref: '#/definitions/document.TableBlock'
+      table_row:
+        $ref: '#/definitions/document.TableRowBlock'
+      type:
+        type: string
+    required:
+    - type
     type: object
   v1.updateGRKCreditContributionRequest:
     properties:
@@ -1193,6 +1281,42 @@ paths:
       tags:
       - Auth
   /blocks/{block_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a block by its ID
+      parameters:
+      - description: Block ID
+        in: path
+        name: block_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Delete Block
+      tags:
+      - Blocks
     get:
       consumes:
       - application/json
@@ -1236,6 +1360,57 @@ paths:
       security:
       - BearerAuth: []
       summary: Get Block
+      tags:
+      - Blocks
+    patch:
+      consumes:
+      - application/json
+      description: Update a block by its ID
+      parameters:
+      - description: Block ID
+        in: path
+        name: block_id
+        required: true
+        type: string
+      - description: Update Block Request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.updateBlockRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.blockResponse'
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Update Block
       tags:
       - Blocks
   /blocks/{block_id}/children:
@@ -1295,6 +1470,49 @@ paths:
       summary: Get Child Blocks
       tags:
       - Blocks
+  /blocks/{block_id}/move:
+    post:
+      consumes:
+      - application/json
+      description: Move a block to a new parent or position
+      parameters:
+      - description: Block ID
+        in: path
+        name: block_id
+        required: true
+        type: string
+      - description: Move Block Request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.moveBlockRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Move Block
+      tags:
+      - Blocks
   /documents:
     post:
       consumes:
@@ -1329,6 +1547,63 @@ paths:
       security:
       - BearerAuth: []
       summary: Create Blank Document
+      tags:
+      - Documents
+  /documents/{document_id}/blocks/{parent_id}/children:
+    post:
+      consumes:
+      - application/json
+      description: Create a new child block under a specified parent block
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: string
+      - description: Parent Block ID
+        in: path
+        name: parent_id
+        required: true
+        type: string
+      - description: Create Block Request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.createBlockRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/constants.ResponseBody'
+            - properties:
+                data:
+                  $ref: '#/definitions/v1.blockResponse'
+                request_id:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/apperror.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apperror.Error'
+      security:
+      - BearerAuth: []
+      summary: Create Child Block
       tags:
       - Documents
   /documents/{document_id}/dram/chapters/{chapter}:
