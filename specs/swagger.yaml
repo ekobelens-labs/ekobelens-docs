@@ -1365,7 +1365,797 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Update a block by its ID
+      description: |+
+        ## Path Parameters
+
+        | Parameter | Type | Required | Description |
+        |-----------|------|----------|-------------|
+        | `block_id` | UUID | Yes | The unique identifier of the block to update |
+
+        ---
+
+        ## Request Body
+
+        ```json
+        {
+          "type": "string",
+          "paragraph": { ... }
+        }
+        ```
+
+        ### Core Fields
+
+        | Field | Type | Required | Description |
+        |-------|------|----------|-------------|
+        | `type` | string | **Yes** | The type of block. Must match the block's current type or be a valid type change. Determines which block-specific field should be provided. |
+
+        ---
+
+        ## Block Types
+
+        ### Supported Types
+
+        | Type | JSON Key | Description |
+        |------|----------|-------------|
+        | `divider` | `divider` | Horizontal line separator |
+        | `heading_1` | `heading_1` | Top-level heading |
+        | `heading_2` | `heading_2` | Second-level heading |
+        | `heading_3` | `heading_3` | Third-level heading |
+        | `paragraph` | `paragraph` | Text paragraph |
+        | `table` | `table` | Table container |
+        | `table_row` | `table_row` | Row within a table |
+        | `image` | `image` | Image block |
+        | `equation` | `equation` | Mathematical equation |
+        | `bulleted_list_item` | `bulleted_list_item` | Bulleted list item |
+        | `numbered_list_item` | `numbered_list_item` | Numbered list item |
+        | `callout` | `callout` | Highlighted callout box |
+
+        ---
+
+        ## Block Type Specific Fields
+
+        ### Divider
+
+        Simple horizontal separator with no additional properties.
+
+        ```json
+        {
+          "type": "divider",
+          "divider": {}
+        }
+        ```
+
+        ---
+
+        ### Heading (heading_1, heading_2, heading_3)
+
+        ```json
+        {
+          "type": "heading_1",
+          "heading_1": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Updated Heading Text",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Updated Heading Text",
+                "href": null
+              }
+            ],
+            "is_toggleable": false,
+            "color": "default"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects containing the heading content |
+        | `is_toggleable` | boolean | Whether the heading can be collapsed/expanded |
+        | `color` | string | Color of the heading text (defaults to "default") |
+
+        ---
+
+        ### Paragraph
+
+        ```json
+        {
+          "type": "paragraph",
+          "paragraph": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Updated paragraph content with ",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Updated paragraph content with ",
+                "href": null
+              },
+              {
+                "type": "text",
+                "text": {
+                  "content": "formatted text",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": true,
+                  "italic": true,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "formatted text",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects |
+        | `color` | string | Text color (defaults to "default") |
+
+        ---
+
+        ### Table
+
+        ```json
+        {
+          "type": "table",
+          "table": {
+            "table_width": 4,
+            "has_column_header": true,
+            "has_row_header": true
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `table_width` | integer | Number of columns in the table |
+        | `has_column_header` | boolean | Whether the first row is a header |
+        | `has_row_header` | boolean | Whether the first column is a header |
+
+        ---
+
+        ### Table Row
+
+        ```json
+        {
+          "type": "table_row",
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "Updated Cell 1", "link": null },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Updated Cell 1",
+                  "href": null
+                }
+              ],
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "Updated Cell 2", "link": null },
+                  "annotations": {
+                    "bold": true,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Updated Cell 2",
+                  "href": null
+                }
+              ]
+            ]
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `cells` | array[][] | 2D array where each inner array is a cell containing rich text objects |
+
+        ---
+
+        ### Image
+
+        **External Image:**
+
+        ```json
+        {
+          "type": "image",
+          "image": {
+            "type": "external",
+            "external": {
+              "id": null,
+              "url": "https://example.com/new-image.jpg"
+            },
+            "caption": [
+              {
+                "type": "text",
+                "text": { "content": "Updated caption", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Updated caption",
+                "href": null
+              }
+            ]
+          }
+        }
+        ```
+
+        **File-based Image:**
+
+        ```json
+        {
+          "type": "image",
+          "image": {
+            "type": "file",
+            "file": {
+              "id": "new-file-uuid-here",
+              "url": null,
+              "expiry_time": null
+            },
+            "caption": []
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `type` | string | "external" or "file" |
+        | `external` | object | External URL reference (when type is "external") |
+        | `file` | object | Internal file reference (when type is "file") |
+        | `caption` | array | Array of rich text for image caption |
+
+        ---
+
+        ### Equation
+
+        ```json
+        {
+          "type": "equation",
+          "equation": {
+            "expression": "\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `expression` | string | LaTeX or mathematical expression |
+
+        ---
+
+        ### Bulleted List Item
+
+        ```json
+        {
+          "type": "bulleted_list_item",
+          "bulleted_list_item": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": { "content": "Updated bullet point", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Updated bullet point",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects |
+        | `color` | string | Text color (defaults to "default") |
+
+        ---
+
+        ### Numbered List Item
+
+        ```json
+        {
+          "type": "numbered_list_item",
+          "numbered_list_item": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": { "content": "Updated numbered item", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Updated numbered item",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects |
+        | `color` | string | Text color (defaults to "default") |
+
+        ---
+
+        ### Callout
+
+        ```json
+        {
+          "type": "callout",
+          "callout": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": { "content": "Updated important notice!", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Updated important notice!",
+                "href": null
+              }
+            ],
+            "icon": "info",
+            "color": "blue_background"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects |
+        | `icon` | string | Emoji or icon identifier to display |
+        | `color` | string | Background or text color |
+
+        ---
+
+        ## Rich Text Object Structure
+
+        Rich text objects allow for formatted text with various annotations.
+
+        ```json
+        {
+          "type": "text",
+          "text": {
+            "content": "The actual text content",
+            "link": "https://optional-link.com"
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "The actual text content",
+          "href": null
+        }
+        ```
+
+        ### Rich Text Types
+
+        | Type | Description | Example |
+        |------|-------------|---------|
+        | `text` | Plain or formatted text | Regular content |
+        | `equation` | Inline mathematical equation | `$x^2$` |
+        | `mention` | Reference to user or page | @user or @page |
+
+        ### Annotations
+
+        | Property | Type | Description |
+        |----------|------|-------------|
+        | `bold` | boolean | Bold text |
+        | `italic` | boolean | Italic text |
+        | `strikethrough` | boolean | Strikethrough text |
+        | `underline` | boolean | Underlined text |
+        | `code` | boolean | Monospace code formatting |
+        | `color` | string | Text or background color |
+
+        ---
+
+        ## Complete Request Examples
+
+        ### Example 1: Update paragraph text
+
+        **Scenario**: Modify the content of an existing paragraph block.
+
+        ```bash
+        PATCH /blocks/para-uuid-123
+        ```
+
+        ```json
+        {
+          "type": "paragraph",
+          "paragraph": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "This is the updated content for the paragraph.",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "This is the updated content for the paragraph.",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        ---
+
+        ### Example 2: Update heading with formatting
+
+        **Scenario**: Change heading text and add formatting.
+
+        ```bash
+        PATCH /blocks/heading-uuid-456
+        ```
+
+        ```json
+        {
+          "type": "heading_2",
+          "heading_2": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Section 2: ",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": true,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Section 2: ",
+                "href": null
+              },
+              {
+                "type": "text",
+                "text": {
+                  "content": "Methodology",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": true,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Methodology",
+                "href": null
+              }
+            ],
+            "is_toggleable": true,
+            "color": "blue"
+          }
+        }
+        ```
+
+        ---
+
+        ### Example 3: Update table row cells
+
+        **Scenario**: Modify cell contents in a table row.
+
+        ```bash
+        PATCH /blocks/row-uuid-789
+        ```
+
+        ```json
+        {
+          "type": "table_row",
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "Temperature", "link": null },
+                  "annotations": {
+                    "bold": true,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Temperature",
+                  "href": null
+                }
+              ],
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "25.5", "link": null },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "25.5",
+                  "href": null
+                }
+              ],
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "°C", "link": null },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "°C",
+                  "href": null
+                }
+              ]
+            ]
+          }
+        }
+        ```
+
+        ---
+
+        ### Example 4: Update callout with new icon and color
+
+        **Scenario**: Change a warning callout to an info callout.
+
+        ```bash
+        PATCH /blocks/callout-uuid-abc
+        ```
+
+        ```json
+        {
+          "type": "callout",
+          "callout": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Note: This section has been reviewed and approved.",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Note: This section has been reviewed and approved.",
+                "href": null
+              }
+            ],
+            "icon": "check",
+            "color": "green_background"
+          }
+        }
+        ```
+
+        ---
+
+        ## Response
+
+        ### Success Response
+
+        **Status Code**: `200 OK`
+
+        ```json
+        {
+          "request_id": "req-uuid-here",
+          "data": {
+            "id": "block-uuid",
+            "object": "block",
+            "parent_id": "parent-block-uuid",
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "paragraph",
+            "paragraph": {
+              "rich_text": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Updated content",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Updated content",
+                  "href": null
+                }
+              ],
+              "color": "default"
+            },
+            "document_id": "document-uuid",
+            "chapter_id": "chapter-uuid",
+            "created_at": "2024-01-15T10:30:00Z",
+            "created_by": "user-uuid",
+            "updated_at": "2024-01-15T11:45:00Z",
+            "updated_by": "user-uuid"
+          }
+        }
+        ```
+
+        ---
+
+        ## Error Responses
+
+        ### 400 Bad Request
+
+        Validation error or malformed request.
+
+        ```json
+        {
+          "code": 400,
+          "message": "Bad Request",
+          "errors": [
+            {
+              "message": "type is required"
+            }
+          ]
+        }
+        ```
+
+        ### 401 Unauthorized
+
+        Missing or invalid authentication token.
+
+        ```json
+        {
+          "code": 401,
+          "message": "Unauthorized",
+          "errors": [
+            {
+              "message": "Invalid or expired token"
+            }
+          ]
+        }
+        ```
+
+        ### 404 Not Found
+
+        Block not found.
+
+        ```json
+        {
+          "code": 404,
+          "message": "Not Found",
+          "errors": [
+            {
+              "message": "Block not found"
+            }
+          ]
+        }
+        ```
+
+        ### 500 Internal Server Error
+
+        Server-side error.
+
+        ```json
+        {
+          "code": 500,
+          "message": "Internal Server Error",
+          "errors": [
+            {
+              "message": "An unexpected error occurred"
+            }
+          ]
+        }
+        ```
+
+        ---
+
+        ## Best Practices
+
+        1. **Match type with field**: Ensure the `type` field matches the corresponding block-specific object (e.g., `type: "paragraph"` must have `paragraph` field).
+
+        2. **Provide complete block data**: When updating, provide the entire block-specific object, not just the changed fields. The system replaces the entire block content.
+
+        3. **Rich text consistency**: Always include all required fields in rich text objects, even if using default values.
+
+        4. **Color defaults**: If `color` is not specified for blocks that support it, the system defaults to `"default"`.
+
+        5. **Preserve formatting**: When updating text content, ensure annotations are preserved unless intentionally changing them.
+
+        6. **Table row cell count**: When updating table rows, ensure the number of cells matches the parent table's `table_width`.
+
+        7. **Validate before update**: Consider retrieving the current block state before updating to ensure you're not overwriting concurrent changes.
+
+        8. **Audit trail**: All updates are tracked with timestamps and user information in the audit log.
+
       parameters:
       - description: Block ID
         in: path
@@ -1474,7 +2264,278 @@ paths:
     post:
       consumes:
       - application/json
-      description: Move a block to a new parent or position
+      description: |+
+        ## Path Parameters
+
+        | Parameter | Type | Required | Description |
+        |-----------|------|----------|-------------|
+        | `block_id` | UUID | Yes | The unique identifier of the block to move |
+
+        ---
+
+        ## Request Body
+
+        ```json
+        {
+          "new_parent_id": "uuid",
+          "new_chapter_id": "uuid | null",
+          "after_id": "uuid | null"
+        }
+        ```
+
+        ### Fields
+
+        | Field | Type | Required | Description |
+        |-------|------|----------|-------------|
+        | `new_parent_id` | UUID | **Yes** | The ID of the new parent block where this block will be moved to. This determines the hierarchical position in the document tree. |
+        | `new_chapter_id` | UUID \| null | No | The ID of the chapter to associate this block with. If not provided, the block retains its current chapter association. |
+        | `after_id` | UUID \| null | No | The ID of the sibling block after which this block should be positioned within the new parent. If `null` or omitted, the block is inserted at the beginning of the new parent's children. |
+
+        ---
+
+        ## Understanding the Move Operation
+
+        Moving a block involves three key aspects:
+
+        ### 1. Changing Parent (Hierarchical Position)
+
+        The `new_parent_id` determines where in the document tree the block will reside.
+
+        **Example Scenario - Moving within same level:**
+
+        ```text
+        Before:
+        Page Block (page-001)
+            Heading Block (heading-001)
+            Paragraph A (para-001)        <- Block to move
+            Table Block (table-001)
+            Paragraph B (para-002)
+
+        After moving para-001 to table-001:
+        Page Block (page-001)
+            Heading Block (heading-001)
+            Table Block (table-001)
+                Paragraph A (para-001)    <- Moved here as child of table
+            Paragraph B (para-002)
+        ```
+
+        ### 2. Positioning Among Siblings
+
+        The `after_id` controls the order within the new parent's children.
+
+        **Example Scenario:**
+
+        ```text
+        Target Parent: table-001
+        Current Children:
+            Row A (row-aaa) [position: 1]
+            Row B (row-bbb) [position: 2]
+            Row C (row-ccc) [position: 3]
+
+        Moving "para-001" to table-001:
+        - after_id = null         -> para-001 inserted at position 1 (before Row A)
+        - after_id = "row-aaa"    -> para-001 inserted at position 2 (between A and B)
+        - after_id = "row-bbb"    -> para-001 inserted at position 3 (between B and C)
+        - after_id = "row-ccc"    -> para-001 inserted at position 4 (after Row C)
+        ```
+
+        ### 3. Chapter Reassignment (Optional)
+
+        The `new_chapter_id` allows reassigning the block to a different chapter during the move.
+
+        **Example Scenario:**
+
+        ```text
+        Document: "Environmental Report"
+          +-- Chapter: "Introduction" (chapter-intro-001)
+          |   +-- Block: Overview paragraph (para-001)   <- Moving this
+          +-- Chapter: "Methodology" (chapter-method-001)
+          |   +-- Block: Data collection heading
+          +-- Chapter: "Results" (chapter-results-001)
+              +-- Block: Findings table
+
+        Moving para-001 to Results chapter:
+        Request body:
+        {
+          "new_parent_id": "results-parent-block-id",
+          "new_chapter_id": "chapter-results-001",
+          "after_id": null
+        }
+        ```
+
+        ---
+
+        ## Complete Request Examples
+
+        ### Example 1: Move block to different parent (same chapter)
+
+        **Scenario**: Move a paragraph block to become a child of a callout block.
+
+        ```bash
+        POST /blocks/para-123-uuid/move
+        ```
+
+        ```json
+        {
+          "new_parent_id": "callout-456-uuid",
+          "after_id": null
+        }
+        ```
+
+        **Result**: The paragraph is now nested inside the callout, at the first position.
+
+        ---
+
+        ### Example 2: Move block with specific positioning
+
+        **Scenario**: Move a list item to a specific position among siblings.
+
+        ```bash
+        POST /blocks/list-item-789/move
+        ```
+
+        ```json
+        {
+          "new_parent_id": "page-block-001",
+          "after_id": "existing-heading-block"
+        }
+        ```
+
+        **Result**: The list item is moved under the page block, positioned immediately after the existing heading.
+
+        ---
+
+        ### Example 3: Move block to different chapter
+
+        **Scenario**: Relocate a block from "Introduction" chapter to "Conclusion" chapter.
+
+        ```bash
+        POST /blocks/block-abc-123/move
+        ```
+
+        ```json
+        {
+          "new_parent_id": "conclusion-section-parent",
+          "new_chapter_id": "chapter-conclusion-uuid",
+          "after_id": "summary-paragraph-id"
+        }
+        ```
+
+        **Result**: The block is moved to the Conclusion chapter, positioned after the summary paragraph.
+
+        ---
+
+        ### Example 4: Reorder within same parent
+
+        **Scenario**: Move a block to a different position under the same parent (reordering siblings).
+
+        ```bash
+        POST /blocks/block-to-reorder/move
+        ```
+
+        ```json
+        {
+          "new_parent_id": "current-parent-id",
+          "after_id": "target-sibling-id"
+        }
+        ```
+
+        **Result**: The block stays under the same parent but is repositioned after the target sibling.
+
+        ---
+
+        ## Response
+
+        ### Success Response
+
+        **Status Code**: `204 No Content`
+
+        The move operation completed successfully. No response body is returned.
+
+        ---
+
+        ## Error Responses
+
+        ### 400 Bad Request
+
+        Invalid request parameters or validation error.
+
+        ```json
+        {
+          "code": 400,
+          "message": "Bad Request",
+          "errors": [
+            {
+              "message": "new_parent_id is required"
+            }
+          ]
+        }
+        ```
+
+        ### 401 Unauthorized
+
+        Missing or invalid authentication token.
+
+        ```json
+        {
+          "code": 401,
+          "message": "Unauthorized",
+          "errors": [
+            {
+              "message": "Invalid or expired token"
+            }
+          ]
+        }
+        ```
+
+        ### 404 Not Found
+
+        Block or target parent not found.
+
+        ```json
+        {
+          "code": 404,
+          "message": "Not Found",
+          "errors": [
+            {
+              "message": "Block not found"
+            }
+          ]
+        }
+        ```
+
+        ### 500 Internal Server Error
+
+        Server-side error.
+
+        ```json
+        {
+          "code": 500,
+          "message": "Internal Server Error",
+          "errors": [
+            {
+              "message": "An unexpected error occurred"
+            }
+          ]
+        }
+        ```
+
+        ---
+
+        ## Best Practices
+
+        1. **Validate parent compatibility**: Ensure the new parent block type can logically contain the block being moved (e.g., table rows should only be moved to table blocks).
+
+        2. **Preserve chapter consistency**: When moving blocks between parents in the same chapter, consider whether `new_chapter_id` needs to be explicitly set.
+
+        3. **Handle circular references**: The system prevents moving a block to become its own descendant. Attempting this will result in an error.
+
+        4. **Batch operations**: For complex reorganizations, consider the order of move operations to avoid temporary invalid states.
+
+        5. **Position preservation**: If you don't care about specific positioning, omit `after_id` to place the block at the beginning of the new parent's children.
+
+        6. **Audit trail**: All move operations are tracked in the audit log with user information and timestamps.
+
       parameters:
       - description: Block ID
         in: path
@@ -1553,7 +2614,863 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new child block under a specified parent block
+      description: |
+        ## Path Parameters
+
+        | Parameter | Type | Required | Description |
+        |-----------|------|----------|-------------|
+        | `document_id` | UUID | Yes | The unique identifier of the document |
+        | `parent_id` | UUID | Yes | The unique identifier of the parent block under which the new block will be created |
+
+        ---
+
+        ## Request Body
+
+        ```json
+        {
+          "chapter_id": "uuid",
+          "type": "string",
+          "after_id": "uuid | null"
+        }
+        ```
+
+        ### Core Fields
+
+        | Field | Type | Required | Description |
+        |-------|------|----------|-------------|
+        | `chapter_id` | UUID | **Yes** | The chapter within the document that this block belongs to. Chapters are organizational units that group related blocks together. |
+        | `type` | string | **Yes** | The type of block to create. Determines which block-specific field should be provided. |
+        | `after_id` | UUID \| null | No | The ID of the sibling block after which this new block should be positioned. If `null` or omitted, the block is inserted at the beginning of the parent's children. |
+
+        ---
+
+        ## Understanding the ID Fields
+
+        ### `parent_id` (Path Parameter)
+
+        **Purpose**: Defines the hierarchical parent of the new block.
+
+        The parent-child relationship creates a tree structure within the document. The new block becomes a direct child of the specified parent.
+
+        **Example Scenario:**
+
+        ```text
+        Document (doc-001)
+            Page Block (page-001)          <- This could be the parent_id
+                Heading Block (heading-001)
+                Paragraph Block (para-001)
+                Table Block (table-001)     <- This could be the parent_id
+                    Table Row (row-001)
+                    Table Row (row-002)
+        ```
+
+        - To add a block directly under the page: `parent_id = page-001`
+        - To add a table row inside the table: `parent_id = table-001`
+
+        ### `after_id` (Request Body)
+
+        **Purpose**: Controls the position of the new block among its siblings.
+
+        This determines where the block appears in the ordered list of children under the same parent.
+
+        **Example Scenario:**
+
+        ```text
+        Parent Block (parent-001)
+            Child A (block-aaa) [position: 1]
+            Child B (block-bbb) [position: 2]
+            Child C (block-ccc) [position: 3]
+        ```
+
+        - `after_id = null` - New block inserted at position 1 (before Child A)
+        - `after_id = "block-aaa"` - New block inserted at position 2 (between A and B)
+        - `after_id = "block-bbb"` - New block inserted at position 3 (between B and C)
+        - `after_id = "block-ccc"` - New block inserted at position 4 (after Child C)
+
+        ### `chapter_id` (Request Body)
+
+        **Purpose**: Associates the block with a specific chapter in the document.
+
+        Chapters are high-level organizational units within a document. They allow grouping of related content and can have their own schema definitions.
+
+        **Example Scenario:**
+
+        ```text
+        Document: "Environmental Report"
+          +-- Chapter: "Introduction" (chapter-intro-001)
+          |   +-- Block: Overview paragraph
+          |   +-- Block: Objectives list
+          +-- Chapter: "Methodology" (chapter-method-001)
+          |   +-- Block: Data collection heading
+          |   +-- Block: Process description
+          +-- Chapter: "Results" (chapter-results-001)
+              +-- Block: Findings table
+              +-- Block: Analysis paragraph
+        ```
+
+        When creating a block:
+
+        - `chapter_id = "chapter-method-001"` - Block is associated with the Methodology chapter
+        - This helps maintain document structure and enables chapter-specific operations
+
+        ---
+
+        ## Block Types
+
+        ### Supported Types
+
+        | Type | JSON Key | Description |
+        |------|----------|-------------|
+        | `divider` | `divider` | Horizontal line separator |
+        | `heading_1` | `heading_1` | Top-level heading |
+        | `heading_2` | `heading_2` | Second-level heading |
+        | `heading_3` | `heading_3` | Third-level heading |
+        | `paragraph` | `paragraph` | Text paragraph |
+        | `table` | `table` | Table container |
+        | `table_row` | `table_row` | Row within a table |
+        | `image` | `image` | Image block |
+        | `equation` | `equation` | Mathematical equation |
+        | `bulleted_list_item` | `bulleted_list_item` | Bulleted list item |
+        | `numbered_list_item` | `numbered_list_item` | Numbered list item |
+        | `callout` | `callout` | Highlighted callout box |
+
+        ---
+
+        ## Block Type Specific Fields
+
+        ### Divider
+
+        Simple horizontal separator with no additional properties.
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "divider",
+          "divider": {}
+        }
+        ```
+
+        ---
+
+        ### Heading (heading_1, heading_2, heading_3)
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "heading_1",
+          "heading_1": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Introduction",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Introduction",
+                "href": null
+              }
+            ],
+            "is_toggleable": false,
+            "color": "default"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects containing the heading content |
+        | `is_toggleable` | boolean | Whether the heading can be collapsed/expanded |
+        | `color` | string | Color of the heading text (defaults to "default") |
+
+        ---
+
+        ### Paragraph
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "paragraph",
+          "paragraph": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "This is a paragraph with ",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "This is a paragraph with ",
+                "href": null
+              },
+              {
+                "type": "text",
+                "text": {
+                  "content": "bold text",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": true,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "bold text",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects |
+        | `color` | string | Text color (defaults to "default") |
+
+        ---
+
+        ### Table
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "table",
+          "table": {
+            "table_width": 3,
+            "has_column_header": true,
+            "has_row_header": false
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `table_width` | integer | Number of columns in the table |
+        | `has_column_header` | boolean | Whether the first row is a header |
+        | `has_row_header` | boolean | Whether the first column is a header |
+
+        ---
+
+        ### Table Row
+
+        **Note**: Table rows must have a table block as their parent.
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "table_row",
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "Cell 1", "link": null },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Cell 1",
+                  "href": null
+                }
+              ],
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "Cell 2", "link": null },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Cell 2",
+                  "href": null
+                }
+              ]
+            ]
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `cells` | array[][] | 2D array where each inner array is a cell containing rich text objects |
+
+        ---
+
+        ### Image
+
+        **External Image:**
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "image",
+          "image": {
+            "type": "external",
+            "external": {
+              "id": null,
+              "url": "https://example.com/image.jpg"
+            },
+            "caption": [
+              {
+                "type": "text",
+                "text": { "content": "Image caption", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Image caption",
+                "href": null
+              }
+            ]
+          }
+        }
+        ```
+
+        **File-based Image:**
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "image",
+          "image": {
+            "type": "file",
+            "file": {
+              "id": "file-uuid-here",
+              "url": null,
+              "expiry_time": null
+            },
+            "caption": []
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `type` | string | "external" or "file" |
+        | `external` | object | External URL reference (when type is "external") |
+        | `file` | object | Internal file reference (when type is "file") |
+        | `caption` | array | Array of rich text for image caption |
+
+        ---
+
+        ### Equation
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "equation",
+          "equation": {
+            "expression": "E = mc^2"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `expression` | string | LaTeX or mathematical expression |
+
+        ---
+
+        ### Bulleted List Item
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "bulleted_list_item",
+          "bulleted_list_item": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": { "content": "First bullet point", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "First bullet point",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects |
+        | `color` | string | Text color (defaults to "default") |
+
+        ---
+
+        ### Numbered List Item
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "numbered_list_item",
+          "numbered_list_item": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": { "content": "Step one", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Step one",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects |
+        | `color` | string | Text color (defaults to "default") |
+
+        ---
+
+        ### Callout
+
+        ```json
+        {
+          "chapter_id": "550e8400-e29b-41d4-a716-446655440000",
+          "type": "callout",
+          "callout": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": { "content": "Important notice!", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Important notice!",
+                "href": null
+              }
+            ],
+            "icon": "warning",
+            "color": "yellow_background"
+          }
+        }
+        ```
+
+        | Field | Type | Description |
+        |-------|------|-------------|
+        | `rich_text` | array | Array of rich text objects |
+        | `icon` | string | Emoji or icon identifier to display |
+        | `color` | string | Background or text color |
+
+        ---
+
+        ## Rich Text Object Structure
+
+        Rich text objects allow for formatted text with various annotations.
+
+        ```json
+        {
+          "type": "text",
+          "text": {
+            "content": "The actual text content",
+            "link": "https://optional-link.com"
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "The actual text content",
+          "href": null
+        }
+        ```
+
+        ### Rich Text Types
+
+        | Type | Description | Example |
+        |------|-------------|---------|
+        | `text` | Plain or formatted text | Regular content |
+        | `equation` | Inline mathematical equation | `$x^2$` |
+        | `mention` | Reference to user or page | @user or @page |
+
+        ### Annotations
+
+        | Property | Type | Description |
+        |----------|------|-------------|
+        | `bold` | boolean | Bold text |
+        | `italic` | boolean | Italic text |
+        | `strikethrough` | boolean | Strikethrough text |
+        | `underline` | boolean | Underlined text |
+        | `code` | boolean | Monospace code formatting |
+        | `color` | string | Text or background color |
+
+        ---
+
+        ## Complete Request Examples
+
+        ### Example 1: Creating a paragraph after an existing block
+
+        **Scenario**: Add a paragraph in the "Introduction" chapter, positioned after an existing heading.
+
+        ```bash
+        POST /documents/d1234567-89ab-cdef-0123-456789abcdef/blocks/p9876543-21fe-dcba-9876-543210fedcba/children
+        ```
+
+        ```json
+        {
+          "chapter_id": "c1111111-2222-3333-4444-555555555555",
+          "type": "paragraph",
+          "after_id": "h7777777-8888-9999-aaaa-bbbbbbbbbbbb",
+          "paragraph": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "This document outlines the environmental impact assessment methodology.",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "This document outlines the environmental impact assessment methodology.",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        **Explanation**:
+
+        - `document_id`: The document containing all content
+        - `parent_id` (path): The page or container block
+        - `chapter_id`: "Introduction" chapter
+        - `after_id`: The heading block ID, so this paragraph appears right after it
+
+        ---
+
+        ### Example 2: Creating a table with rows
+
+        **Step 1**: Create the table block
+
+        ```bash
+        POST /documents/d1234567-89ab-cdef-0123-456789abcdef/blocks/p9876543-21fe-dcba-9876-543210fedcba/children
+        ```
+
+        ```json
+        {
+          "chapter_id": "c2222222-3333-4444-5555-666666666666",
+          "type": "table",
+          "table": {
+            "table_width": 3,
+            "has_column_header": true,
+            "has_row_header": false
+          }
+        }
+        ```
+
+        **Step 2**: Create table rows (using the table's ID as parent_id)
+
+        ```bash
+        POST /documents/d1234567-89ab-cdef-0123-456789abcdef/blocks/t-table-block-id/children
+        ```
+
+        ```json
+        {
+          "chapter_id": "c2222222-3333-4444-5555-666666666666",
+          "type": "table_row",
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "Parameter", "link": null },
+                  "annotations": {
+                    "bold": true,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Parameter",
+                  "href": null
+                }
+              ],
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "Value", "link": null },
+                  "annotations": {
+                    "bold": true,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Value",
+                  "href": null
+                }
+              ],
+              [
+                {
+                  "type": "text",
+                  "text": { "content": "Unit", "link": null },
+                  "annotations": {
+                    "bold": true,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Unit",
+                  "href": null
+                }
+              ]
+            ]
+          }
+        }
+        ```
+
+        ---
+
+        ### Example 3: Creating nested list items
+
+        **Creating parent bulleted list item**:
+
+        ```bash
+        POST /documents/doc-id/blocks/page-block-id/children
+        ```
+
+        ```json
+        {
+          "chapter_id": "chapter-uuid",
+          "type": "bulleted_list_item",
+          "bulleted_list_item": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": { "content": "Main bullet point", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Main bullet point",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        **Creating nested bullet (child of the parent bullet)**:
+
+        ```bash
+        POST /documents/doc-id/blocks/parent-bullet-id/children
+        ```
+
+        ```json
+        {
+          "chapter_id": "chapter-uuid",
+          "type": "bulleted_list_item",
+          "bulleted_list_item": {
+            "rich_text": [
+              {
+                "type": "text",
+                "text": { "content": "Nested bullet point", "link": null },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Nested bullet point",
+                "href": null
+              }
+            ],
+            "color": "default"
+          }
+        }
+        ```
+
+        ---
+
+        ## Response
+
+        ### Success Response
+
+        **Status Code**: `201 Created`
+
+        ```json
+        {
+          "request_id": "req-uuid-here",
+          "data": {
+            "id": "new-block-uuid",
+            "object": "block",
+            "parent_id": "parent-block-uuid",
+            "has_children": false,
+            "archived": false,
+            "in_trash": false,
+            "type": "paragraph",
+            "paragraph": {
+              "rich_text": [],
+              "color": "default"
+            },
+            "document_id": "document-uuid",
+            "chapter_id": "chapter-uuid",
+            "created_at": "2024-01-15T10:30:00Z",
+            "created_by": "user-uuid",
+            "updated_at": "2024-01-15T10:30:00Z",
+            "updated_by": "user-uuid"
+          }
+        }
+        ```
+
+        ---
+
+        ## Error Responses
+
+        ### 400 Bad Request
+
+        Validation error or malformed request.
+
+        ```json
+        {
+          "code": 400,
+          "message": "Bad Request",
+          "errors": [
+            {
+              "message": "chapter_id is required"
+            }
+          ]
+        }
+        ```
+
+        ### 401 Unauthorized
+
+        Missing or invalid authentication token.
+
+        ```json
+        {
+          "code": 401,
+          "message": "Unauthorized",
+          "errors": [
+            {
+              "message": "Invalid or expired token"
+            }
+          ]
+        }
+        ```
+
+        ### 404 Not Found
+
+        Document or parent block not found.
+
+        ```json
+        {
+          "code": 404,
+          "message": "Not Found",
+          "errors": [
+            {
+              "message": "Parent block not found"
+            }
+          ]
+        }
+        ```
+
+        ### 500 Internal Server Error
+
+        Server-side error.
+
+        ```json
+        {
+          "code": 500,
+          "message": "Internal Server Error",
+          "errors": [
+            {
+              "message": "An unexpected error occurred"
+            }
+          ]
+        }
+        ```
+
+        ---
+
+        ## Best Practices
+
+        1. **Always specify `chapter_id`**: Every block must be associated with a chapter for proper document organization.
+
+        2. **Use `after_id` for precise positioning**: When the order of blocks matters, always provide `after_id` to ensure consistent positioning.
+
+        3. **Match block type with its field**: Ensure the `type` field matches the corresponding block-specific object (e.g., `type: "paragraph"` must have `paragraph` field).
+
+        4. **Table rows require table parent**: When creating table rows, the `parent_id` must be a table block.
+
+        5. **Rich text consistency**: Always include all required fields in rich text objects, even if using default values.
+
+        6. **Color defaults**: If `color` is not specified for blocks that support it, the system defaults to `"default"`.
       parameters:
       - description: Document ID
         in: path
