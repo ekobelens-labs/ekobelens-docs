@@ -637,6 +637,8 @@ definitions:
         type: boolean
       is_locked:
         type: boolean
+      methodology_page_id:
+        type: string
       object:
         type: string
       parent:
