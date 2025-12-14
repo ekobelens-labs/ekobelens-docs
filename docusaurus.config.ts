@@ -134,7 +134,7 @@ const config: Config = {
             },
             {
               label: 'DRAM Management',
-              to: '/docs/api/generated/create-dram-document-chapter',
+              to: '/docs/api/generated/create-dram-document-chapter-1',
             },
             {
               label: 'User Management',

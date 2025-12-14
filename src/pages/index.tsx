@@ -36,7 +36,7 @@ const features: Feature[] = [
     title: 'DRAM Lifecycle',
     description:
       'Create, update, and publish DRAM chapters with structured metadata aligned to mitigation workflows.',
-    link: '/docs/api/generated/create-dram-document-chapter',
+    link: '/docs/api/generated/create-dram-document-chapter-1',
     cta: 'Browse DRAM APIs',
     icon: '📄',
   },
